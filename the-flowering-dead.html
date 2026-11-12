@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Flowering Dead | Nicola Vischi</title>
+<meta name="description" content="The Flowering Dead: level design case study.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#E8512B;
+  --bg:#0D1417; --bg-alt:#111B20; --panel:#16222A; --panel-2:#1B2A32;
+  --line:#22313A; --line-2:#2F424C;
+  --text:#E9EEEE; --text-2:#B5C4C8; --muted:#8FA3A9; --faint:#7D9299;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1200px;margin:0 auto;padding:96px 24px}
+.alt{background:var(--bg-alt);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.h2{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin:0;line-height:1;color:var(--text)}
+.h-xl{font-size:80px;margin-top:20px}
+.h-lg{font-size:56px;margin-top:12px}
+.h-md{font-size:32px}
+.eyebrow{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.ph{background:repeating-linear-gradient(135deg,var(--panel) 0,var(--panel) 12px,var(--panel-2) 12px,var(--panel-2) 24px);border:1px solid var(--line-2);color:var(--faint);display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 28px;font-weight:700;font-size:14px;letter-spacing:.12em;text-transform:uppercase;border:0;cursor:pointer;font-family:inherit}
+.btn-fill{background:var(--accent);color:var(--bg)}
+.btn-fill:hover{filter:brightness(1.1)}
+.btn-line{border:1.5px solid var(--text);color:var(--text)}
+.btn-line:hover{background:var(--text);color:var(--bg)}
+.link{display:inline-block;margin-top:40px;font-size:15px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--accent);border-bottom:2px solid var(--accent);padding-bottom:4px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* header */
+header{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar{max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:16px}
+.logo{width:56px;height:56px;border-radius:50%;font-size:10px}
+.brand .h2{font-size:28px}
+.brand small{display:block;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+nav{display:flex;flex-wrap:wrap;gap:32px;font-size:14px;letter-spacing:.14em;text-transform:uppercase;font-weight:500}
+nav a{color:var(--text-2)}
+nav a:hover{color:var(--text)}
+
+/* hero: image fills the whole section, text on top */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.hero-bg{position:absolute;inset:0;z-index:0;overflow:hidden;background:var(--bg)}
+.hero-bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+/* gradient over the image: dark on the left, lighter toward the right */
+.hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(13,20,23,.96) 0%,rgba(13,20,23,.8) 30%,rgba(13,20,23,.4) 65%,rgba(13,20,23,.08) 100%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1;display:flex;align-items:center;min-height:640px}
+.hero .copy{max-width:640px;min-width:0}
+.hero .h-xl{margin-top:0}
+.hero p{font-size:18px;line-height:1.6;color:var(--text-2);margin:28px 0 0;max-width:520px}
+.hero .cta{display:flex;flex-wrap:wrap;gap:16px;margin-top:40px}
+
+/* grids */
+.grid{display:grid;gap:24px;margin-top:48px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g5{grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
+.card-ph{height:300px;flex-direction:column;gap:12px}
+/* project card with image: pops toward the viewer on hover, title over a bottom-up black gradient */
+.proj{position:relative;display:block;height:300px;overflow:hidden;border:1px solid var(--line-2);background:repeating-linear-gradient(135deg,var(--panel) 0,var(--panel) 12px,var(--panel-2) 12px,var(--panel-2) 24px);transition:transform .35s ease,box-shadow .35s ease}
+.proj-img{position:absolute;inset:0;background-size:cover;background-position:center;transition:transform .5s ease}
+.proj::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,.5) 35%,rgba(0,0,0,0) 65%);transition:opacity .35s ease}
+.proj-title{position:absolute;z-index:1;left:24px;right:24px;bottom:20px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:32px;line-height:1;text-transform:uppercase;letter-spacing:.02em;color:var(--text)}
+.proj:hover,.proj:focus-visible{transform:translateY(-8px) scale(1.04);box-shadow:0 28px 56px rgba(0,0,0,.6);z-index:2}
+.proj:hover .proj-img,.proj:focus-visible .proj-img{transform:scale(1.06)}
+@media (prefers-reduced-motion:reduce){.proj,.proj-img{transition:none}.proj:hover,.proj:focus-visible{transform:none}.proj:hover .proj-img{transform:none}}
+.strip{display:flex;gap:16px;margin-top:24px;overflow-x:auto;padding-bottom:12px}
+/* bigger 1:2 cards, about 3 visible at a time; the rest scroll */
+.strip{scroll-snap-type:x mandatory}
+.strip > .proj{flex:0 0 calc((100% - 32px) / 3.2);height:auto;aspect-ratio:1/2;scroll-snap-align:start}
+/* room inside the scroller so the hover pop-out isn't clipped */
+.strip{padding:24px 12px;margin-inline:-12px;scroll-padding-inline:12px}
+/* work-in-progress cards: big diagonal label across the card */
+.proj.wip{container-type:size;display:flex;align-items:center;justify-content:center}
+.wip-label{position:relative;display:block;transform:rotate(-45deg);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:56cqw;line-height:1;letter-spacing:.04em;color:var(--line-2);white-space:nowrap}
+.hint{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-top:12px}
+.sq{aspect-ratio:1/1}
+.g5 > .proj{height:auto;aspect-ratio:1/1}
+.g5 > .proj .proj-title{font-size:22px;left:16px;right:16px;bottom:14px}
+
+/* about */
+.about{display:flex;flex-wrap:wrap;gap:48px;margin-top:48px;align-items:center}
+.about-img{flex:1 1 480px;min-width:0;width:100%;max-width:100%;aspect-ratio:3/2;object-fit:cover;display:block;border:1px solid var(--line-2)}
+.about .txt{flex:1 1 400px;min-width:0}
+.about p{font-size:17px;line-height:1.6;color:var(--text-2);margin:24px 0 0}
+.about .quote{font-size:44px;line-height:1.1;text-transform:uppercase;letter-spacing:.02em;color:var(--text);margin:0}
+.tool{height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:var(--panel);border:1px solid var(--line-2);padding:16px;text-align:center}
+.tool img{max-height:44px;max-width:80%;object-fit:contain}
+.tool span{font-size:13px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--text-2)}
+
+/* career */
+.job{border-top:3px solid var(--line-2);background:var(--panel);padding:32px}
+.job.now{border-top-color:var(--accent)}
+.job .when{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.job .h2{font-size:32px;margin-top:12px}
+.job-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:12px}
+.job-head .h2{margin-top:0}
+.job-logo{height:48px;width:auto;flex:none;background:#fff;padding:4px;border-radius:4px}
+.job-logo-lg{height:80px;margin-block:-16px}
+.job-logo-bare{background:none;padding:0;border-radius:0}
+.job .role{font-size:15px;color:var(--text-2);margin-top:8px}
+.job ul{margin:24px 0 0;padding-left:20px;color:var(--text-2);line-height:1.9;font-size:15px}
+
+/* contact */
+.contact{display:flex;flex-wrap:wrap;gap:64px}
+.contact .info{flex:1 1 360px;min-width:0}
+.contact form{flex:1 1 440px;min-width:0;display:flex;flex-direction:column;gap:20px}
+.contact .city{font-size:18px;color:var(--text-2);margin:32px 0 0}
+.mail{display:block;font-size:18px;margin-top:12px;border-bottom:1px solid var(--line-2);width:max-content;max-width:100%;padding-bottom:4px;overflow-wrap:anywhere}
+.social{display:flex;gap:16px;margin-top:32px}
+.social a{width:48px;height:48px;border:1px solid var(--line-2);display:flex;align-items:center;justify-content:center}
+label{display:block;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+input,textarea{width:100%;min-height:48px;background:var(--panel);border:1px solid var(--line-2);color:var(--text);font-family:inherit;font-size:16px;padding:0 14px}
+textarea{height:140px;padding:12px 14px;resize:none}
+
+footer .bar{padding:28px 24px;font-size:14px;color:var(--muted)}
+footer a{letter-spacing:.14em;text-transform:uppercase}
+
+/* tablet */
+@media (max-width:900px){
+  .wrap{padding:72px 20px}
+  .h-xl{font-size:60px}
+  .h-lg{font-size:44px}
+  .g3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g5{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .strip > .proj{flex-basis:calc((100% - 16px) / 2.2)}
+  .about .quote{font-size:36px}
+  .hero .wrap{min-height:540px}
+}
+/* phone */
+@media (max-width:560px){
+  .wrap{padding:48px 16px}
+  .bar{padding:12px 16px}
+  nav{gap:20px;font-size:13px}
+  .brand .h2{font-size:22px}
+  .logo{width:44px;height:44px}
+  .h-xl{font-size:52px}
+  .h-lg{font-size:40px}
+  .hero p{font-size:16px}
+  .hero .wrap{min-height:580px}
+  .hero-bg::after{background:linear-gradient(90deg,rgba(13,20,23,.92) 0%,rgba(13,20,23,.75) 50%,rgba(13,20,23,.45) 100%)}
+  .hero .cta .btn{width:100%}
+  .g2,.g3{grid-template-columns:1fr}
+  .g5{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid{margin-top:28px}
+  .card-ph{height:190px}
+  .proj{height:190px}
+  .proj-title{font-size:26px;left:16px;bottom:14px}
+  .strip{margin-top:16px}
+  .strip > .proj{flex-basis:calc((100% - 16px) / 1.4)}
+  .about .quote{font-size:30px}
+  .job{padding:24px}
+  .job .h2{font-size:28px}
+  .job-logo{height:36px}
+  .job-logo-lg{height:56px;margin-block:-10px}
+  .contact{gap:40px}
+}
+
+/* ===== project page ===== */
+.back{display:inline-flex;align-items:center;gap:8px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.back:hover{color:var(--text)}
+.p-hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.p-hero .ph{position:absolute;inset:0;border:0;z-index:0;align-items:flex-start;justify-content:flex-end;padding:24px}
+.p-hero .ph::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(13,20,23,.96) 0%,rgba(13,20,23,.55) 45%,rgba(13,20,23,.15) 100%)}
+.p-hero .wrap{position:relative;z-index:1;min-height:720px;display:flex;flex-direction:column;justify-content:flex-end}
+.p-hero .h-xl{margin-top:16px}
+.p-sub{font-size:20px;color:var(--text-2);margin-top:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:500}
+/* team grid: 4 x 4 squares with a name under each */
+.team{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:32px 24px;margin-top:48px}
+.member{margin:0;min-width:0}
+.member-photo{aspect-ratio:1/1;max-width:100%}
+.member figcaption{margin-top:12px;text-align:center;overflow-wrap:anywhere;display:flex;flex-direction:column;gap:4px}
+.m-name{font-size:15px;font-weight:500;color:var(--text)}
+.m-role{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.m-link{display:inline-flex;align-items:center;justify-content:center;align-self:center;width:36px;height:36px;color:var(--muted);border:1px solid var(--line-2);transition:color .2s,border-color .2s}
+.m-link:hover,.m-link:focus-visible{color:var(--accent);border-color:var(--accent)}
+.rule{border-top:1px solid var(--line)}
+@media (max-width:560px){.team{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 16px;margin-top:28px}}
+.facts{display:flex;flex-wrap:wrap;gap:12px 32px;margin-top:32px;padding-top:24px;border-top:1px solid var(--line-2)}
+.facts div{min-width:120px}
+.facts dt{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.facts dd{margin:6px 0 0;font-size:16px;color:var(--text)}
+.prose{max-width:68ch}
+.prose p{font-size:17px;line-height:1.7;color:var(--text-2);margin:20px 0 0}
+.prose strong{color:var(--text);font-weight:700}
+.split{display:flex;flex-wrap:wrap;gap:48px;margin-top:48px;align-items:center}
+.split > *{flex:1 1 420px;min-width:0}
+.split .ph{aspect-ratio:4/3;max-width:100%}
+.wide{aspect-ratio:16/9;margin-top:48px;max-width:100%}
+/* trailer: poster with a play button, native controls once playing */
+.video-wrap{position:relative;margin-top:48px;aspect-ratio:16/9;max-width:100%;background:#000;border:1px solid var(--line-2)}
+.video-wrap video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.play-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:88px;height:88px;border-radius:50%;border:2px solid var(--text);background:rgba(13,20,23,.55);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .2s}
+.play-btn svg{margin-left:4px}
+.play-btn:hover,.play-btn:focus-visible{background:var(--accent);border-color:var(--accent);color:var(--bg);transform:translate(-50%,-50%) scale(1.06)}
+.video-wrap.playing .play-btn{display:none}
+@media (max-width:560px){.play-btn{width:64px;height:64px}.play-btn svg{width:26px;height:26px}}
+.steps{margin-top:48px;display:flex;flex-direction:column;gap:0;counter-reset:step}
+/* each step is a full-width band; bands alternate like the page sections */
+.step{padding-block:56px}
+.step:nth-child(odd){background:var(--bg-alt);box-shadow:0 0 0 100vmax var(--bg-alt);clip-path:inset(0 -100vmax)}
+.step{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:center}
+.step:nth-child(even) .ph{order:-1}
+.step .num{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.16em;color:var(--accent)}
+.step h3{font-size:36px;margin-top:8px}
+.step .ph{aspect-ratio:16/10;max-width:100%}
+/* stacked step: text on top, image at full width for readability */
+.step.step-stack{grid-template-columns:minmax(0,1fr);gap:32px}
+.step-stack .prose{max-width:80ch}
+.step-img{display:block;width:100%;max-width:100%;height:auto;border:1px solid var(--line-2)}
+.step-img-free{border:0;max-height:560px;object-fit:contain}
+.step:nth-child(even) .step-img,.step:nth-child(even) .step-gallery{order:-1}
+.note{margin-top:56px;border-left:3px solid var(--accent);background:var(--panel);padding:24px 28px}
+.note h3{font-size:28px}
+.note + .note{margin-top:24px}
+/* document carousel: one page at a time, side arrows */
+.carousel{position:relative;margin-top:48px}
+.car-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none}
+.car-track::-webkit-scrollbar{display:none}
+.car-slide{flex:0 0 100%;aspect-ratio:16/9;scroll-snap-align:start}
+.car-doc{display:block;width:100%;height:auto;object-fit:contain;background:#000;border:1px solid var(--line-2)}
+.car-btn{position:absolute;top:50%;transform:translateY(-50%);width:56px;height:56px;display:flex;align-items:center;justify-content:center;background:rgba(13,20,23,.85);color:var(--text);border:1px solid var(--line-2);font-size:22px;cursor:pointer;transition:background .2s,opacity .2s}
+.car-btn:hover{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.car-btn:disabled{opacity:.25;cursor:default;background:rgba(13,20,23,.85);color:var(--text);border-color:var(--line-2)}
+.car-prev{left:16px}
+.car-next{right:16px}
+.car-count{margin-top:16px;text-align:center;font-size:13px;letter-spacing:.16em;color:var(--muted);font-variant-numeric:tabular-nums}
+/* small gallery inside a process step */
+.step-gallery{min-width:0}
+.car-sm{margin-top:0}
+.car-fig{margin:0;aspect-ratio:auto;display:flex;flex-direction:column;gap:10px}
+.car-fig img{display:block;width:100%;aspect-ratio:4/3;object-fit:contain;background:#fff;border:1px solid var(--line-2)}
+/* wide gallery: each image at its natural size, no bars */
+.car-wide .car-track{align-items:flex-start}
+.car-wide .car-fig img{aspect-ratio:auto;height:auto;background:none}
+.car-sm.car-wide + .car-count{margin-top:8px}
+.car-fig figcaption{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.car-sm .car-btn{top:calc((100% - 28px) / 2);width:44px;height:44px;font-size:18px}
+.car-sm .car-prev{left:10px}.car-sm .car-next{right:10px}
+.car-sm + .car-count{margin-top:-25px;text-align:right;line-height:20px}
+@media (max-width:560px){.car-btn{width:44px;height:44px;font-size:18px}.car-prev{left:8px}.car-next{right:8px}}
+.next{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+@media (max-width:900px){.step{grid-template-columns:1fr;gap:20px}.step:nth-child(even) .ph{order:0}.step:nth-child(even) .step-img,.step:nth-child(even) .step-gallery{order:0}}
+@media (max-width:560px){.p-hero .wrap{min-height:420px;padding-top:200px}.p-hero .ph{background-size:100% auto!important;background-repeat:no-repeat!important;background-color:#1a161c!important}.step h3{font-size:30px}.p-sub{font-size:16px}}
+</style>
+<script>
+/* always open a project page at the top */
+if('scrollRestoration' in history){history.scrollRestoration='manual';}
+function toTop(){if(!location.hash||location.hash==='#top'){document.documentElement.style.scrollBehavior='auto';window.scrollTo(0,0);document.documentElement.style.scrollBehavior='';}}
+document.addEventListener('DOMContentLoaded',toTop);
+window.addEventListener('load',toTop);
+window.addEventListener('pageshow',toTop);
+</script>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <a class="brand" href="index.html#top">
+      <div class="ph logo">Logo</div>
+      <div><div class="h2">Nicola Vischi</div><small>Junior Level / Narrative Designer</small></div>
+    </a>
+    <nav aria-label="Main">
+      <a href="index.html#top">Home</a>
+      <a href="index.html#portfolio">Portfolio</a>
+      <a href="index.html#about">About me</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- 1. Title + key facts. Cover image: add style="background:url(img/the-flowering-dead.jpg) center/cover" to the .ph below -->
+<section id="top" class="p-hero">
+  <div class="ph" aria-hidden="true" style="background:url(img/the-flowering-dead-keyart.jpg) center top/cover;font-size:0"></div>
+  <div class="wrap">
+    <a class="back" href="index.html#portfolio">← Back to projects</a>
+    <h1 class="h2 h-xl">The Flowering Dead</h1>
+    <dl class="facts">
+      <div><dt>Year</dt><dd>2026</dd></div>
+      <div><dt>Role</dt><dd>Level Designer</dd></div>
+      <div><dt>Engine</dt><dd>UE5</dd></div>
+      <div><dt>Team</dt><dd>16</dd></div>
+      <div><dt>Duration</dt><dd>6 weeks</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- 2. Pitch -->
+<section class="wrap">
+  <div class="eyebrow">Pitch</div>
+  <h2 class="h2 h-lg">The game in a few lines</h2>
+  <div class="prose">
+    <p>An <strong>action RPG boss-rush</strong> game where <strong>survivors</strong> fight for their lives in a <strong>post-apocalyptic world</strong> overrun by <strong>monstrous beasts</strong>.</p>
+  </div>
+  <!-- Trailer or gameplay video: replace this box with your YouTube link or a video -->
+  <div class="video-wrap">
+    <video id="trailer" preload="metadata" playsinline poster="video/the-flowering-dead-trailer-poster.jpg">
+      <source src="video/the-flowering-dead-trailer.mp4" type="video/mp4">
+    </video>
+    <button class="play-btn" type="button" aria-label="Play the trailer"><svg width="34" height="34" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></button>
+  </div>
+</section>
+
+<!-- 3. About the concept -->
+<!-- 2b. Team: 16 members. Photo: add style="background:url(img/team-NAME.jpg) center/cover;font-size:0" to a .member-photo LinkedIn: replace href="#" in each .m-link with the profile URL -->
+<section class="alt">
+  <div class="wrap">
+    <div class="eyebrow">Team</div>
+    <h2 class="h2 h-lg">The people behind it</h2>
+    <div class="team">
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Lenny Beauquis</span><a class="m-link" href="https://www.linkedin.com/in/lenny-beauquis-05340a3aa/" target="_blank" rel="noopener" aria-label="Lenny Beauquis on LinkedIn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Sarah Ounali</span><a class="m-link" href="https://www.linkedin.com/in/sarahounali/" target="_blank" rel="noopener" aria-label="Sarah Ounali on LinkedIn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Thibault Merle</span><a class="m-link" href="https://www.linkedin.com/in/thibault-merle-946187311/" target="_blank" rel="noopener" aria-label="Thibault Merle on LinkedIn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Fanny Bernhard</span><a class="m-link" href="https://www.linkedin.com/in/fanny-bernhard/" target="_blank" rel="noopener" aria-label="Fanny Bernhard on LinkedIn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Malo Fougères</span><a class="m-link" href="https://www.linkedin.com/in/malo-fougères-65476938b/" target="_blank" rel="noopener" aria-label="Malo Fougères on LinkedIn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Samuel Augeul-Meunier</span><a class="m-link" href="https://www.linkedin.com/in/samuel-augeul-meunier-0b41a2333/" target="_blank" rel="noopener" aria-label="Samuel Augeul-Meunier on LinkedIn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Nicola Vischi</span><a class="m-link" href="https://www.linkedin.com/in/nicola-vischi-27b385314/" target="_blank" rel="noopener" aria-label="Nicola Vischi on LinkedIn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Vincent Sanchez</span><a class="m-link" href="https://www.linkedin.com/in/vincent-sanchez-50844b375/" target="_blank" rel="noopener" aria-label="Vincent Sanchez on LinkedIn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Romain Nicoghossian</span><a class="m-link" href="https://www.linkedin.com/in/romain-nicoghossian-a39151290/" target="_blank" rel="noopener" aria-label="Romain Nicoghossian on LinkedIn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Lisa Canovas</span><a class="m-link" href="https://www.linkedin.com/in/lisa-canovas-vfx/" target="_blank" rel="noopener" aria-label="Lisa Canovas on LinkedIn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Léa Libert</span><a class="m-link" href="https://www.linkedin.com/in/léa-libert/" target="_blank" rel="noopener" aria-label="Léa Libert on LinkedIn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Théo David</span><a class="m-link" href="https://www.linkedin.com/in/david-theo-ga/" target="_blank" rel="noopener" aria-label="Théo David on LinkedIn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Erwan Rezkallah</span><a class="m-link" href="https://www.linkedin.com/in/erwan-rezkallah/" target="_blank" rel="noopener" aria-label="Erwan Rezkallah on LinkedIn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Flavie Hugonnard-Cotton</span><a class="m-link" href="https://www.linkedin.com/in/flavie-hugonnard-cotton-b57bb6430/" target="_blank" rel="noopener" aria-label="Flavie Hugonnard-Cotton on LinkedIn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Victor Cardineau</span><a class="m-link" href="https://www.linkedin.com/in/victor-cardineau-234735437/" target="_blank" rel="noopener" aria-label="Victor Cardineau on LinkedIn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Hélène Luxemburger</span><a class="m-link" href="https://www.linkedin.com/in/hélène-luxemburger-18229098/" target="_blank" rel="noopener" aria-label="Hélène Luxemburger on LinkedIn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+    <div class="eyebrow">About the concept</div>
+    <h2 class="h2 h-lg">Where the idea came from</h2>
+    <div class="split">
+      <div class="prose">
+        <p>As a project made for the end of my <strong>third year at GameSup</strong>, I had to make a <strong>group project</strong> where we had to create a <strong>vertical slice</strong> of our concept.</p>
+        <p>Our core ideas were to create a feeling of <strong>gigantism</strong> for the <strong>Boss</strong> as well as make him feel <strong>visually disgusting</strong> and <strong>overpowered</strong>.</p>
+      </div>
+      <img class="step-img step-img-free" src="img/tfd-boss.png" alt="Concept art of the Boss: a giant infected deer with huge antlers, overgrown by plants">
+    </div>
+</section>
+
+<!-- 4. Process -->
+<div class="rule"></div>
+<section class="wrap">
+  <div class="eyebrow">My process</div>
+  <h2 class="h2 h-lg">From idea to playable level</h2>
+  <div class="steps">
+    <div class="step step-stack">
+      <div><div class="num">STEP 01</div><h3 class="h2">Conception</h3><div class="prose"><p>We wanted a <strong>fast-paced gameplay</strong> that also included <strong>multiple characters</strong>, different <strong>equipment and abilities</strong>, and <strong>multiplayer accessibility</strong>.</p><p>So, while making the layouts, I had to think about how the <strong>map should adapt to multiple players</strong> with <strong>different strategies</strong>, depending on each <strong>player's choice</strong> of equipment and skills.</p></div></div>
+      <img class="step-img" src="img/tfd-core-pillars.jpg" alt="Core pillars slide: Fight, Empower yourself and Cooperate, each with its design goals">
+    </div>
+    <div class="step">
+      <div><div class="num">STEP 02</div><h3 class="h2">Layout</h3><div class="prose"><p>At the beginning I focused too much on how the players should <strong>move and fight comfortably</strong> in this area, but I started to see that it wasn't really looking like a <strong>believable city</strong> where people used to live.</p><p>With different changes and applying the <strong>feedback from our meetings</strong>, I obtained a version that is more believable while still offering <strong>hooks and debris</strong> to the player to move and <strong>dodge attacks</strong> rapidly.</p></div></div>
+      <div class="step-gallery">
+        <div class="carousel car-sm" aria-roledescription="carousel" aria-label="Layout iterations">
+          <div class="car-track" tabindex="0">
+            <figure class="car-slide car-fig"><img src="img/tfd-layout-sketch.jpg" alt="Hand-drawn paper sketches of several arena layout ideas"><figcaption>1 · Paper sketches</figcaption></figure>
+            <figure class="car-slide car-fig"><img src="img/tfd-layout-blockout.png" alt="Digital layout of the arena with the boss in the center, roofs and ziplines"><figcaption>2 · First digital layout</figcaption></figure>
+            <figure class="car-slide car-fig"><img src="img/tfd-layout.png" alt="Final top-down layout map with legend: roofs, debris, hook points, roots, park and tree hooks"><figcaption>3 · Final layout</figcaption></figure>
+          </div>
+          <button class="car-btn car-prev" type="button" aria-label="Previous image">&#8592;</button>
+          <button class="car-btn car-next" type="button" aria-label="Next image">&#8594;</button>
+        </div>
+        <div class="car-count" aria-live="polite"><span class="car-now">1</span> / <span class="car-total">3</span></div>
+      </div>
+    </div>
+    <div class="step">
+      <div><div class="num">STEP 03</div><h3 class="h2">Flow analysis</h3><div class="prose"><p>Since we wanted <strong>action</strong> to be the main protagonist, I wanted to instill in the player a sense of <strong>&ldquo;state of flow&rdquo;</strong> while moving around rapidly. The map can be navigated in a <strong>circular motion</strong> or <strong>transversally</strong>.</p><p>While entering the Boss arena, the player can <strong>trigger the fight when ready</strong>, giving time to <strong>plan a strategy with the team</strong> before engaging.</p><p>Also, the Boss is expected to have <strong>three phases</strong> that will offer a change in the <strong>action pacing</strong>. Depending on the <strong>movesets</strong> of each phase, this creates <strong>variety</strong> and requires <strong>adaptation</strong> while keeping up the <strong>pace of combat</strong>.</p></div></div>
+      <div class="step-gallery">
+        <div class="carousel car-sm car-wide" aria-roledescription="carousel" aria-label="Flow analysis iterations">
+          <div class="car-track" tabindex="0">
+            <figure class="car-slide car-fig"><img src="img/tfd-flow-v1.jpg" alt="First version of the arena blockout in Unreal Engine, with highlighted paths, cover and boss positions"><figcaption>1 · First version</figcaption></figure>
+            <figure class="car-slide car-fig"><img src="img/tfd-flow-top.jpg" alt="Reworked arena blockout seen from above: the main hall, surrounding buildings, the central boss pit and orange cover points"><figcaption>2 · Reworked</figcaption></figure>
+          </div>
+          <button class="car-btn car-prev" type="button" aria-label="Previous image">&#8592;</button>
+          <button class="car-btn car-next" type="button" aria-label="Next image">&#8594;</button>
+        </div>
+        <div class="car-count" aria-live="polite"><span class="car-now">1</span> / <span class="car-total">2</span></div>
+      </div>
+    </div>
+    <div class="step">
+      <div><div class="num">STEP 04</div><h3 class="h2">Blockout &amp; iterations</h3><div class="prose"><p>I created an arena with <strong>three different zones</strong> in one of the first iterations. The zone around the <strong>Main Hall</strong> allowed players to <strong>gain height</strong>, <strong>cut lines of sight</strong> and <strong>hide to recover</strong>.</p><p>The <strong>Boss pit</strong> is the central area that allows players to <strong>attack more directly</strong> and <strong>move between zones and buildings</strong>. It's a <strong>double-edged sword</strong>, since it can be an advantage for the Boss too.</p><p>The <strong>third zone</strong> is <strong>narrower</strong> and has more buildings, but to <strong>avoid trapping the player</strong> there under incoming attacks, I used <strong>broken buildings</strong> to offer <strong>different levels of height</strong> to dodge attacks and <strong>counterattack</strong>.</p><p>The arena had to allow the Boss to also <strong>use its surroundings to its benefit</strong>, not be only a place hostile to its inhabitant.</p></div></div>
+      <img class="step-img" src="img/tfd-flow.gif" alt="Animated fly-through of the Unreal Engine blockout of the boss arena: grey buildings around an open plaza, derailed train cars, rails and the boss in the center">
+    </div>
+    <div class="step">
+      <div><div class="num">STEP 05</div><h3 class="h2">Final level</h3><div class="prose"><p>Since the Boss is a <strong>deer with giant horns</strong>, I imagined how that would <strong>affect the buildings</strong>. While creating the <strong>destroyed buildings</strong> I kept that in mind, to show that the Boss is not just there for a fight, but <strong>lives and roams around the area</strong>.</p><p>Since it's an animal that has been <strong>infected by Datura flowers</strong>, I used a lot of <strong>vegetation</strong> to show the <strong>structural decadence</strong> of the city, and I needed to see how <strong>nature takes back its place</strong> without human influence. With the final touches, I had to <strong>reduce the size of the playable area</strong> and <strong>correct the positioning</strong> of certain buildings to obtain an arena that <strong>feels less empty</strong> and <strong>keeps up the flow</strong>.</p></div></div>
+      <img class="step-img" src="img/tfd-final.gif" alt="Animated sequence showing the arena being built in Unreal Engine, from the empty ground plane to the final level">
+    </div>
+  </div>
+  <div class="note">
+    <h3 class="h2">The challenges</h3>
+    <div class="prose"><p>One of the greatest challenges of this project was to <strong>iterate a lot and fast</strong>. Since we had a <strong>big scope and expectations</strong>, we <strong>tried a lot and recreated a lot</strong>.</p><p>I learned that it's <strong>not a bad thing if something isn't perfect right away</strong>; it's usually necessary to <strong>see the next step to take</strong>.</p></div>
+  </div>
+  <div class="note">
+    <h3 class="h2">Problems encountered</h3>
+    <div class="prose"><p>This was the <strong>biggest team project</strong> I had worked on. We had <strong>more time</strong>, but <strong>many deadlines and client demands</strong>.</p><p>Many members of the team had to <strong>rework what they made according to the client</strong>, and it caused <strong>delays on certain tasks</strong> as we reached the <strong>final stage of the project</strong>.</p><p>We had to <strong>adapt our planning and priorities</strong> to <strong>fit the deadlines</strong>.</p></div>
+  </div>
+</section>
+
+<!-- 5. Production example: one .ph per page of your level design document -->
+<section class="alt">
+  <div class="wrap">
+    <div class="eyebrow">Production example</div>
+    <h2 class="h2 h-lg">Level design document</h2>
+    <div class="carousel" aria-roledescription="carousel" aria-label="Level design document pages">
+      <div class="car-track" tabindex="0">
+        <img class="car-slide car-doc" src="img/tfd-ldd/page-01.jpg" alt="Level design document, page 1: Title" loading="lazy">
+        <img class="car-slide car-doc" src="img/tfd-ldd/page-02.jpg" alt="Level design document, page 2: Intentions" loading="lazy">
+        <img class="car-slide car-doc" src="img/tfd-ldd/page-03.jpg" alt="Level design document, page 3: Level context & scope" loading="lazy">
+        <img class="car-slide car-doc" src="img/tfd-ldd/page-04.jpg" alt="Level design document, page 4: Level chart" loading="lazy">
+        <img class="car-slide car-doc" src="img/tfd-ldd/page-05.jpg" alt="Level design document, page 5: Level blocking" loading="lazy">
+        <img class="car-slide car-doc" src="img/tfd-ldd/page-06.jpg" alt="Level design document, page 6: References" loading="lazy">
+        <img class="car-slide car-doc" src="img/tfd-ldd/page-07.jpg" alt="Level design document, page 7: References" loading="lazy">
+        <img class="car-slide car-doc" src="img/tfd-ldd/page-08.jpg" alt="Level design document, page 8: References" loading="lazy">
+        <img class="car-slide car-doc" src="img/tfd-ldd/page-09.jpg" alt="Level design document, page 9: Global map arena" loading="lazy">
+        <img class="car-slide car-doc" src="img/tfd-ldd/page-10.jpg" alt="Level design document, page 10: Bubble diagram" loading="lazy">
+        <img class="car-slide car-doc" src="img/tfd-ldd/page-11.jpg" alt="Level design document, page 11: Sketches" loading="lazy">
+        <img class="car-slide car-doc" src="img/tfd-ldd/page-12.jpg" alt="Level design document, page 12: Layout – no game elements" loading="lazy">
+        <img class="car-slide car-doc" src="img/tfd-ldd/page-13.jpg" alt="Level design document, page 13: Layout – game elements" loading="lazy">
+        <img class="car-slide car-doc" src="img/tfd-ldd/page-14.jpg" alt="Level design document, page 14: Layout – golden path" loading="lazy">
+        <img class="car-slide car-doc" src="img/tfd-ldd/page-15.jpg" alt="Level design document, page 15: Metrics" loading="lazy">
+        <img class="car-slide car-doc" src="img/tfd-ldd/page-16.jpg" alt="Level design document, page 16: Boss intentions" loading="lazy">
+        <img class="car-slide car-doc" src="img/tfd-ldd/page-17.jpg" alt="Level design document, page 17: Level flow & pacing" loading="lazy">
+      </div>
+      <button class="car-btn car-prev" type="button" aria-label="Previous page">&#8592;</button>
+      <button class="car-btn car-next" type="button" aria-label="Next page">&#8594;</button>
+    </div>
+    <div class="car-count" aria-live="polite"><span class="car-now">1</span> / <span class="car-total">3</span></div>
+  </div>
+</section>
+
+<section class="wrap next">
+  <a class="back" href="index.html#portfolio">← Back to projects</a>
+  <a class="link" style="margin-top:0" href="index.html#contact">Get in touch →</a>
+</section>
+
+</main>
+
+<footer style="border-top:1px solid var(--line)">
+  <div class="bar" style="justify-content:space-between">
+    <span>©2026 Nicola Vischi</span>
+    <a href="#top">Back to top ↑</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  document.querySelectorAll('.carousel').forEach(function(car){
+    var track=car.querySelector('.car-track'), slides=track.children;
+    var prev=car.querySelector('.car-prev'), next=car.querySelector('.car-next');
+    var count=car.nextElementSibling && car.nextElementSibling.classList.contains('car-count') ? car.nextElementSibling : null;
+    if(count) count.querySelector('.car-total').textContent=slides.length;
+    function idx(){return Math.round(track.scrollLeft/track.clientWidth);}
+    function update(){var i=idx(); if(count) count.querySelector('.car-now').textContent=i+1; prev.disabled=i<=0; next.disabled=i>=slides.length-1;}
+    function go(d){track.scrollTo({left:(idx()+d)*track.clientWidth});}
+    prev.addEventListener('click',function(){go(-1)});
+    next.addEventListener('click',function(){go(1)});
+    track.addEventListener('keydown',function(e){if(e.key==='ArrowLeft'){e.preventDefault();go(-1)}if(e.key==='ArrowRight'){e.preventDefault();go(1)}});
+    track.addEventListener('scroll',function(){window.requestAnimationFrame(update)});
+    window.addEventListener('resize',update);
+    update();
+  });
+})();
+</script>
+<script>
+(function(){
+  var wrap=document.querySelector('.video-wrap'); if(!wrap) return;
+  var v=wrap.querySelector('video'), b=wrap.querySelector('.play-btn');
+  b.addEventListener('click',function(){ wrap.classList.add('playing'); v.controls=true; v.play(); });
+  v.addEventListener('ended',function(){ wrap.classList.remove('playing'); v.controls=false; v.load(); });
+})();
+</script>
+</body>
+</html>

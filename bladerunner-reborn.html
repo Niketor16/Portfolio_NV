@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BladeRunner Re:Born | Nicola Vischi</title>
+<meta name="description" content="BladeRunner Re:Born: level design case study.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#E8512B;
+  --bg:#0D1417; --bg-alt:#111B20; --panel:#16222A; --panel-2:#1B2A32;
+  --line:#22313A; --line-2:#2F424C;
+  --text:#E9EEEE; --text-2:#B5C4C8; --muted:#8FA3A9; --faint:#7D9299;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1200px;margin:0 auto;padding:96px 24px}
+.alt{background:var(--bg-alt);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.h2{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin:0;line-height:1;color:var(--text)}
+.h-xl{font-size:80px;margin-top:20px}
+.h-lg{font-size:56px;margin-top:12px}
+.h-md{font-size:32px}
+.eyebrow{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.ph{background:repeating-linear-gradient(135deg,var(--panel) 0,var(--panel) 12px,var(--panel-2) 12px,var(--panel-2) 24px);border:1px solid var(--line-2);color:var(--faint);display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 28px;font-weight:700;font-size:14px;letter-spacing:.12em;text-transform:uppercase;border:0;cursor:pointer;font-family:inherit}
+.btn-fill{background:var(--accent);color:var(--bg)}
+.btn-fill:hover{filter:brightness(1.1)}
+.btn-line{border:1.5px solid var(--text);color:var(--text)}
+.btn-line:hover{background:var(--text);color:var(--bg)}
+.link{display:inline-block;margin-top:40px;font-size:15px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--accent);border-bottom:2px solid var(--accent);padding-bottom:4px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* header */
+header{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar{max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:16px}
+.logo{width:56px;height:56px;border-radius:50%;font-size:10px}
+.brand .h2{font-size:28px}
+.brand small{display:block;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+nav{display:flex;flex-wrap:wrap;gap:32px;font-size:14px;letter-spacing:.14em;text-transform:uppercase;font-weight:500}
+nav a{color:var(--text-2)}
+nav a:hover{color:var(--text)}
+
+/* hero: image fills the whole section, text on top */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.hero-bg{position:absolute;inset:0;z-index:0;overflow:hidden;background:var(--bg)}
+.hero-bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+/* gradient over the image: dark on the left, lighter toward the right */
+.hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(13,20,23,.96) 0%,rgba(13,20,23,.8) 30%,rgba(13,20,23,.4) 65%,rgba(13,20,23,.08) 100%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1;display:flex;align-items:center;min-height:640px}
+.hero .copy{max-width:640px;min-width:0}
+.hero .h-xl{margin-top:0}
+.hero p{font-size:18px;line-height:1.6;color:var(--text-2);margin:28px 0 0;max-width:520px}
+.hero .cta{display:flex;flex-wrap:wrap;gap:16px;margin-top:40px}
+
+/* grids */
+.grid{display:grid;gap:24px;margin-top:48px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g5{grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
+.card-ph{height:300px;flex-direction:column;gap:12px}
+/* project card with image: pops toward the viewer on hover, title over a bottom-up black gradient */
+.proj{position:relative;display:block;height:300px;overflow:hidden;border:1px solid var(--line-2);background:repeating-linear-gradient(135deg,var(--panel) 0,var(--panel) 12px,var(--panel-2) 12px,var(--panel-2) 24px);transition:transform .35s ease,box-shadow .35s ease}
+.proj-img{position:absolute;inset:0;background-size:cover;background-position:center;transition:transform .5s ease}
+.proj::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,.5) 35%,rgba(0,0,0,0) 65%);transition:opacity .35s ease}
+.proj-title{position:absolute;z-index:1;left:24px;right:24px;bottom:20px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:32px;line-height:1;text-transform:uppercase;letter-spacing:.02em;color:var(--text)}
+.proj:hover,.proj:focus-visible{transform:translateY(-8px) scale(1.04);box-shadow:0 28px 56px rgba(0,0,0,.6);z-index:2}
+.proj:hover .proj-img,.proj:focus-visible .proj-img{transform:scale(1.06)}
+@media (prefers-reduced-motion:reduce){.proj,.proj-img{transition:none}.proj:hover,.proj:focus-visible{transform:none}.proj:hover .proj-img{transform:none}}
+.strip{display:flex;gap:16px;margin-top:24px;overflow-x:auto;padding-bottom:12px}
+/* bigger 1:2 cards, about 3 visible at a time; the rest scroll */
+.strip{scroll-snap-type:x mandatory}
+.strip > .proj{flex:0 0 calc((100% - 32px) / 3.2);height:auto;aspect-ratio:1/2;scroll-snap-align:start}
+/* room inside the scroller so the hover pop-out isn't clipped */
+.strip{padding:24px 12px;margin-inline:-12px;scroll-padding-inline:12px}
+/* work-in-progress cards: big diagonal label across the card */
+.proj.wip{container-type:size;display:flex;align-items:center;justify-content:center}
+.wip-label{position:relative;display:block;transform:rotate(-45deg);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:56cqw;line-height:1;letter-spacing:.04em;color:var(--line-2);white-space:nowrap}
+.hint{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-top:12px}
+.sq{aspect-ratio:1/1}
+.g5 > .proj{height:auto;aspect-ratio:1/1}
+.g5 > .proj .proj-title{font-size:22px;left:16px;right:16px;bottom:14px}
+
+/* about */
+.about{display:flex;flex-wrap:wrap;gap:48px;margin-top:48px;align-items:center}
+.about-img{flex:1 1 480px;min-width:0;width:100%;max-width:100%;aspect-ratio:3/2;object-fit:cover;display:block;border:1px solid var(--line-2)}
+.about .txt{flex:1 1 400px;min-width:0}
+.about p{font-size:17px;line-height:1.6;color:var(--text-2);margin:24px 0 0}
+.about .quote{font-size:44px;line-height:1.1;text-transform:uppercase;letter-spacing:.02em;color:var(--text);margin:0}
+.tool{height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:var(--panel);border:1px solid var(--line-2);padding:16px;text-align:center}
+.tool img{max-height:44px;max-width:80%;object-fit:contain}
+.tool span{font-size:13px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--text-2)}
+
+/* career */
+.job{border-top:3px solid var(--line-2);background:var(--panel);padding:32px}
+.job.now{border-top-color:var(--accent)}
+.job .when{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.job .h2{font-size:32px;margin-top:12px}
+.job-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:12px}
+.job-head .h2{margin-top:0}
+.job-logo{height:48px;width:auto;flex:none;background:#fff;padding:4px;border-radius:4px}
+.job-logo-lg{height:80px;margin-block:-16px}
+.job-logo-bare{background:none;padding:0;border-radius:0}
+.job .role{font-size:15px;color:var(--text-2);margin-top:8px}
+.job ul{margin:24px 0 0;padding-left:20px;color:var(--text-2);line-height:1.9;font-size:15px}
+
+/* contact */
+.contact{display:flex;flex-wrap:wrap;gap:64px}
+.contact .info{flex:1 1 360px;min-width:0}
+.contact form{flex:1 1 440px;min-width:0;display:flex;flex-direction:column;gap:20px}
+.contact .city{font-size:18px;color:var(--text-2);margin:32px 0 0}
+.mail{display:block;font-size:18px;margin-top:12px;border-bottom:1px solid var(--line-2);width:max-content;max-width:100%;padding-bottom:4px;overflow-wrap:anywhere}
+.social{display:flex;gap:16px;margin-top:32px}
+.social a{width:48px;height:48px;border:1px solid var(--line-2);display:flex;align-items:center;justify-content:center}
+label{display:block;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+input,textarea{width:100%;min-height:48px;background:var(--panel);border:1px solid var(--line-2);color:var(--text);font-family:inherit;font-size:16px;padding:0 14px}
+textarea{height:140px;padding:12px 14px;resize:none}
+
+footer .bar{padding:28px 24px;font-size:14px;color:var(--muted)}
+footer a{letter-spacing:.14em;text-transform:uppercase}
+
+/* tablet */
+@media (max-width:900px){
+  .wrap{padding:72px 20px}
+  .h-xl{font-size:60px}
+  .h-lg{font-size:44px}
+  .g3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g5{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .strip > .proj{flex-basis:calc((100% - 16px) / 2.2)}
+  .about .quote{font-size:36px}
+  .hero .wrap{min-height:540px}
+}
+/* phone */
+@media (max-width:560px){
+  .wrap{padding:48px 16px}
+  .bar{padding:12px 16px}
+  nav{gap:20px;font-size:13px}
+  .brand .h2{font-size:22px}
+  .logo{width:44px;height:44px}
+  .h-xl{font-size:52px}
+  .h-lg{font-size:40px}
+  .hero p{font-size:16px}
+  .hero .wrap{min-height:580px}
+  .hero-bg::after{background:linear-gradient(90deg,rgba(13,20,23,.92) 0%,rgba(13,20,23,.75) 50%,rgba(13,20,23,.45) 100%)}
+  .hero .cta .btn{width:100%}
+  .g2,.g3{grid-template-columns:1fr}
+  .g5{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid{margin-top:28px}
+  .card-ph{height:190px}
+  .proj{height:190px}
+  .proj-title{font-size:26px;left:16px;bottom:14px}
+  .strip{margin-top:16px}
+  .strip > .proj{flex-basis:calc((100% - 16px) / 1.4)}
+  .about .quote{font-size:30px}
+  .job{padding:24px}
+  .job .h2{font-size:28px}
+  .job-logo{height:36px}
+  .job-logo-lg{height:56px;margin-block:-10px}
+  .contact{gap:40px}
+}
+
+/* ===== project page ===== */
+.back{display:inline-flex;align-items:center;gap:8px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.back:hover{color:var(--text)}
+.p-hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.p-hero .ph{position:absolute;inset:0;border:0;z-index:0;align-items:flex-start;justify-content:flex-end;padding:24px}
+.p-hero .ph::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(13,20,23,.96) 0%,rgba(13,20,23,.55) 45%,rgba(13,20,23,.15) 100%)}
+.p-hero .wrap{position:relative;z-index:1;min-height:720px;display:flex;flex-direction:column;justify-content:flex-end}
+.p-hero .h-xl{margin-top:16px}
+.p-sub{font-size:20px;color:var(--text-2);margin-top:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:500}
+/* team grid: 15 squares (5 x 3) with name and LinkedIn under each */
+.team{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:32px 24px;margin-top:48px}
+.member{margin:0;min-width:0}
+.member-photo{aspect-ratio:1/1;max-width:100%}
+.member figcaption{margin-top:12px;text-align:center;overflow-wrap:anywhere;display:flex;flex-direction:column;gap:4px}
+.m-name{font-size:15px;font-weight:500;color:var(--text)}
+.m-role{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.m-link{display:inline-flex;align-items:center;justify-content:center;align-self:center;width:36px;height:36px;color:var(--muted);border:1px solid var(--line-2);transition:color .2s,border-color .2s}
+.m-link:hover,.m-link:focus-visible{color:var(--accent);border-color:var(--accent)}
+.rule{border-top:1px solid var(--line)}
+@media (max-width:900px){.team{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:560px){.team{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 16px;margin-top:28px}}
+.facts{display:flex;flex-wrap:wrap;gap:12px 32px;margin-top:32px;padding-top:24px;border-top:1px solid var(--line-2)}
+.facts div{min-width:120px}
+.facts dt{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.facts dd{margin:6px 0 0;font-size:16px;color:var(--text)}
+.prose{max-width:68ch}
+.prose p{font-size:17px;line-height:1.7;color:var(--text-2);margin:20px 0 0}
+.prose strong{color:var(--text);font-weight:700}
+.split{display:flex;flex-wrap:wrap;gap:48px;margin-top:48px;align-items:center}
+.split > *{flex:1 1 420px;min-width:0}
+.split .ph{aspect-ratio:4/3;max-width:100%}
+.wide{aspect-ratio:16/9;margin-top:48px;max-width:100%}
+.steps{margin-top:48px;display:flex;flex-direction:column;gap:0;counter-reset:step}
+/* each step is a full-width band; bands alternate like the page sections */
+.step{padding-block:56px}
+.step:nth-child(odd){background:var(--bg-alt);box-shadow:0 0 0 100vmax var(--bg-alt);clip-path:inset(0 -100vmax)}
+.step{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:center}
+.step:nth-child(even) .ph{order:-1}
+.step .num{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.16em;color:var(--accent)}
+.step h3{font-size:36px;margin-top:8px}
+.step .ph{aspect-ratio:16/10;max-width:100%}
+.step-img{display:block;width:100%;max-width:100%;height:auto;border:1px solid var(--line-2)}
+.step:nth-child(even) .step-img{order:-1}
+.note{margin-top:56px;border-left:3px solid var(--accent);background:var(--panel);padding:24px 28px}
+.note h3{font-size:28px}
+.note + .note{margin-top:24px}
+/* document carousel: one page at a time, side arrows */
+.carousel{position:relative;margin-top:48px}
+.car-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none}
+.car-track::-webkit-scrollbar{display:none}
+.car-slide{flex:0 0 100%;aspect-ratio:16/9;scroll-snap-align:start}
+.car-btn{position:absolute;top:50%;transform:translateY(-50%);width:56px;height:56px;display:flex;align-items:center;justify-content:center;background:rgba(13,20,23,.85);color:var(--text);border:1px solid var(--line-2);font-size:22px;cursor:pointer;transition:background .2s,opacity .2s}
+.car-btn:hover{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.car-btn:disabled{opacity:.25;cursor:default;background:rgba(13,20,23,.85);color:var(--text);border-color:var(--line-2)}
+.car-prev{left:16px}
+.car-next{right:16px}
+.car-count{margin-top:16px;text-align:center;font-size:13px;letter-spacing:.16em;color:var(--muted);font-variant-numeric:tabular-nums}
+@media (max-width:560px){.car-btn{width:44px;height:44px;font-size:18px}.car-prev{left:8px}.car-next{right:8px}}
+.next{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+@media (max-width:900px){.step{grid-template-columns:1fr;gap:20px}.step:nth-child(even) .ph{order:0}.step:nth-child(even) .step-img{order:0}}
+@media (max-width:560px){.p-hero .wrap{min-height:420px;padding-top:230px}.p-hero .ph{background-size:100% auto!important;background-repeat:no-repeat!important;background-color:var(--bg)!important}.p-hero .h-xl{font-size:40px}.step h3{font-size:30px}.p-sub{font-size:16px}}
+</style>
+<script>
+/* always open a project page at the top */
+if('scrollRestoration' in history){history.scrollRestoration='manual';}
+function toTop(){if(!location.hash||location.hash==='#top'){document.documentElement.style.scrollBehavior='auto';window.scrollTo(0,0);document.documentElement.style.scrollBehavior='';}}
+document.addEventListener('DOMContentLoaded',toTop);
+window.addEventListener('load',toTop);
+window.addEventListener('pageshow',toTop);
+</script>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <a class="brand" href="index.html#top">
+      <div class="ph logo">Logo</div>
+      <div><div class="h2">Nicola Vischi</div><small>Junior Level / Narrative Designer</small></div>
+    </a>
+    <nav aria-label="Main">
+      <a href="index.html#top">Home</a>
+      <a href="index.html#portfolio">Portfolio</a>
+      <a href="index.html#about">About me</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- 1. Title + key facts. Cover image: add style="background:url(img/bladerunner-reborn.jpg) center/cover" to the .ph below -->
+<section id="top" class="p-hero">
+  <div class="ph" aria-hidden="true" style="background:url(img/bladerunner-reborn.jpg) center/cover;background-position:center top;font-size:0"></div>
+  <div class="wrap">
+    <a class="back" href="index.html#portfolio">← Back to projects</a>
+    <h1 class="h2 h-xl">BladeRunner Re:Born</h1>
+    <dl class="facts">
+      <div><dt>Year</dt><dd>2026</dd></div>
+      <div><dt>Role</dt><dd>Narrative Design</dd></div>
+      <div><dt>Engine</dt><dd>Unity</dd></div>
+      <div><dt>Team</dt><dd>15</dd></div>
+      <div><dt>Duration</dt><dd>3 weeks</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- 2. Pitch -->
+<section class="wrap">
+  <div class="eyebrow">Pitch</div>
+  <h2 class="h2 h-lg">The game in a few lines</h2>
+  <div class="prose">
+    <p>This game is a <strong>2.5D roguelite</strong> based on the <strong>Blade Runner license</strong>, where you play as a <strong>wanted replicant</strong> looking for <strong>revenge</strong> and trying to <strong>recover his lost memories</strong>, with the help of <strong>stolen weapons and body enhancements</strong>.</p>
+  </div>
+  <!-- Trailer or gameplay video: replace this box with your YouTube link or a video -->
+  <a href="#" class="ph wide">Trailer / gameplay video</a>
+</section>
+
+<!-- 3. About the concept -->
+<!-- Team: 15 members. Photo: add style="background:url(img/team-NAME.jpg) center/cover;font-size:0" to a .member-photo LinkedIn: replace href="#" in each .m-link with the profile URL -->
+<section class="alt">
+  <div class="wrap">
+    <div class="eyebrow">Team</div>
+    <h2 class="h2 h-lg">The people behind it</h2>
+    <div class="team">
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">[Name]</span><a class="m-link" href="#" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">[Name]</span><a class="m-link" href="#" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">[Name]</span><a class="m-link" href="#" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">[Name]</span><a class="m-link" href="#" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">[Name]</span><a class="m-link" href="#" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">[Name]</span><a class="m-link" href="#" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">[Name]</span><a class="m-link" href="#" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">[Name]</span><a class="m-link" href="#" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">[Name]</span><a class="m-link" href="#" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">[Name]</span><a class="m-link" href="#" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">[Name]</span><a class="m-link" href="#" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">[Name]</span><a class="m-link" href="#" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">[Name]</span><a class="m-link" href="#" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">[Name]</span><a class="m-link" href="#" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">[Name]</span><a class="m-link" href="#" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+    <div class="eyebrow">About the concept</div>
+    <h2 class="h2 h-lg">Where the idea came from</h2>
+    <div class="split">
+      <div class="prose">
+        <p>We had to <strong>respect the universe of our given license</strong>. We also had <strong>constraints</strong>, like having a <strong>hub</strong>, <strong>skills</strong> and a <strong>merchant</strong>.</p>
+        <p>We took inspiration from games like <strong>Hades</strong> and <strong>Dead Cells</strong>, since we needed to create <strong>procedurally generated levels</strong>.</p>
+      </div>
+      <div class="ph">Concept art / reference</div>
+    </div>
+</section>
+
+<!-- 4. Process -->
+<div class="rule"></div>
+<section class="wrap">
+  <div class="eyebrow">My process</div>
+  <h2 class="h2 h-lg">From idea to playable level</h2>
+  <div class="steps">
+    <div class="step">
+      <div><div class="num">STEP 01</div><h3 class="h2">Scenario</h3><div class="prose"><p>Since in Blade Runner we usually follow the <strong>point of view of an agent</strong>, I found it more interesting to <strong>switch to a Replicant&rsquo;s</strong>. I preferred doing this because many of this license&rsquo;s <strong>themes had already been explored</strong>.</p><p>This gave me <strong>more freedom and room for a new story</strong>, and to show a <strong>new side of Los Angeles</strong>.</p></div></div>
+      <div class="ph">Scenario / storyboard</div>
+    </div>
+    <div class="step">
+      <div><div class="num">STEP 02</div><h3 class="h2">Los Angeles</h3><div class="prose"><p>The city is <strong>plunged into deep darkness</strong> after a <strong>huge blackout</strong> drained it of its lifeblood. During my <strong>research on the license</strong>, I found this event pretty interesting.</p><p>It allowed me to set up a story around the sensation of being a <strong>fugitive in an everyday environment</strong> that is now the <strong>worst enemy of its inhabitants</strong>.</p><p>I wanted the main character to feel like this while <strong>seeking revenge</strong>: even though he&rsquo;s a <strong>replicant</strong>, that doesn&rsquo;t make him <strong>immune to a manhunt</strong>.</p></div></div>
+      <div class="ph">Paper map / top-down layout</div>
+    </div>
+    <div class="step">
+      <div><div class="num">STEP 03</div><h3 class="h2">Storytelling</h3><div class="prose"><p>To tell my story, I conceived <strong>each chapter like a fresh start</strong>.</p><p>Each time a chapter ends with the <strong>death of an antagonist</strong>, the next one brings <strong>new information about the main character</strong>, which also <strong>echoes the lore of the world</strong>, while <strong>guiding the player to his next objective</strong>.</p></div></div>
+      <div class="ph">Beat chart / flow diagram</div>
+    </div>
+    <div class="step">
+      <div><div class="num">STEP 04</div><h3 class="h2">Emotional arc</h3><div class="prose"><p>To emphasize the fact that the main character is <strong>being chased</strong>, I thought that <strong>managing tension</strong> was important for the right experience.</p><p>I wanted the player, after a <strong>boss fight</strong> or after learning <strong>big pieces of the story</strong>, to have <strong>time to absorb and analyze them</strong>, instead of feeling <strong>rushed</strong>, which would shift the player&rsquo;s attention elsewhere.</p></div></div>
+      <img class="step-img" src="img/br-emotional-arc.png" alt="Emotional arc graph: beginning, first memory recovered, the city streets, first Blade Runner boss, the Chinese district, second Runner boss, the Corpo district and final boss">
+    </div>
+  </div>
+  <div class="note">
+    <h3 class="h2">The challenges</h3>
+    <div class="prose"><p>This time I had to <strong>adapt my narration very often</strong> depending on my <strong>team&rsquo;s needs</strong>. I worked a lot with the <strong>character artist</strong> and <strong>level designers</strong>, who had <strong>different needs</strong> that weren&rsquo;t easy to fulfill at the same time.</p><p>It was also my <strong>first time as a lead</strong>, and it taught me how to <strong>better manage my time</strong>, <strong>help others</strong> and <strong>keep everyone aligned with our core intentions</strong>.</p></div>
+  </div>
+  <div class="note">
+    <h3 class="h2">Problems encountered</h3>
+    <div class="prose"><p>We had some <strong>communication problems</strong> in our team that later turned into <strong>delays and sudden issues</strong> that slowed us down.</p><p>There was also a <strong>loss of motivation</strong> and <strong>conflicts</strong> that needed to be <strong>resolved quickly and peacefully</strong>.</p></div>
+  </div>
+</section>
+
+<!-- 5. Production example: one .ph per page of your level design document -->
+<section class="alt">
+  <div class="wrap">
+    <div class="eyebrow">Production example</div>
+    <h2 class="h2 h-lg">Level design document</h2>
+    <div class="carousel" aria-roledescription="carousel" aria-label="Level design document pages">
+      <div class="car-track" id="docTrack" tabindex="0">
+        <div class="ph car-slide">Document page 1</div>
+        <div class="ph car-slide">Document page 2</div>
+        <div class="ph car-slide">Document page 3</div>
+      </div>
+      <button class="car-btn car-prev" type="button" aria-label="Previous page">&#8592;</button>
+      <button class="car-btn car-next" type="button" aria-label="Next page">&#8594;</button>
+    </div>
+    <div class="car-count" aria-live="polite"><span id="docNow">1</span> / <span id="docTotal">3</span></div>
+  </div>
+</section>
+
+<section class="wrap next">
+  <a class="back" href="index.html#portfolio">← Back to projects</a>
+  <a class="link" style="margin-top:0" href="index.html#contact">Get in touch →</a>
+</section>
+
+</main>
+
+<footer style="border-top:1px solid var(--line)">
+  <div class="bar" style="justify-content:space-between">
+    <span>©2026 Nicola Vischi</span>
+    <a href="#top">Back to top ↑</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var track=document.getElementById('docTrack'); if(!track) return;
+  var slides=track.children, prev=document.querySelector('.car-prev'), next=document.querySelector('.car-next');
+  document.getElementById('docTotal').textContent=slides.length;
+  function idx(){return Math.round(track.scrollLeft/track.clientWidth);}
+  function update(){var i=idx();document.getElementById('docNow').textContent=i+1;prev.disabled=i<=0;next.disabled=i>=slides.length-1;}
+  function go(d){track.scrollTo({left:(idx()+d)*track.clientWidth});}
+  prev.addEventListener('click',function(){go(-1)});
+  next.addEventListener('click',function(){go(1)});
+  track.addEventListener('keydown',function(e){if(e.key==='ArrowLeft'){e.preventDefault();go(-1)}if(e.key==='ArrowRight'){e.preventDefault();go(1)}});
+  track.addEventListener('scroll',function(){window.requestAnimationFrame(update)});
+  window.addEventListener('resize',update);
+  update();
+})();
+</script>
+</body>
+</html>

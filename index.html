@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nicola Vischi | Junior Level / Narrative Designer</title>
+<meta name="description" content="Portfolio of a young Level Designer / Builder.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#E8512B;
+  --bg:#0D1417; --bg-alt:#111B20; --panel:#16222A; --panel-2:#1B2A32;
+  --line:#22313A; --line-2:#2F424C;
+  --text:#E9EEEE; --text-2:#B5C4C8; --muted:#8FA3A9; --faint:#7D9299;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1200px;margin:0 auto;padding:96px 24px}
+.alt{background:var(--bg-alt);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.h2{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin:0;line-height:1;color:var(--text)}
+.h-xl{font-size:80px;margin-top:20px}
+.h-lg{font-size:56px;margin-top:12px}
+.h-md{font-size:32px}
+.eyebrow{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.ph{background:repeating-linear-gradient(135deg,var(--panel) 0,var(--panel) 12px,var(--panel-2) 12px,var(--panel-2) 24px);border:1px solid var(--line-2);color:var(--faint);display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 28px;font-weight:700;font-size:14px;letter-spacing:.12em;text-transform:uppercase;border:0;cursor:pointer;font-family:inherit}
+.btn-fill{background:var(--accent);color:var(--bg)}
+.btn-fill:hover{filter:brightness(1.1)}
+.btn-line{border:1.5px solid var(--text);color:var(--text)}
+.btn-line:hover{background:var(--text);color:var(--bg)}
+.link{display:inline-block;margin-top:40px;font-size:15px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--accent);border-bottom:2px solid var(--accent);padding-bottom:4px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* header */
+header{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar{max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:16px}
+.logo{width:56px;height:56px;border-radius:50%;font-size:10px}
+.brand .h2{font-size:28px}
+.brand small{display:block;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+nav{display:flex;flex-wrap:wrap;gap:32px;font-size:14px;letter-spacing:.14em;text-transform:uppercase;font-weight:500}
+nav a{color:var(--text-2)}
+nav a:hover{color:var(--text)}
+
+/* hero: image fills the whole section, text on top */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.hero-bg{position:absolute;inset:0;z-index:0;overflow:hidden;background:var(--bg)}
+.hero-bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+/* gradient over the image: dark on the left, lighter toward the right */
+.hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(13,20,23,.96) 0%,rgba(13,20,23,.8) 30%,rgba(13,20,23,.4) 65%,rgba(13,20,23,.08) 100%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1;display:flex;align-items:center;min-height:640px}
+.hero .copy{max-width:640px;min-width:0}
+.hero .h-xl{margin-top:0}
+.hero p{font-size:18px;line-height:1.6;color:var(--text-2);margin:28px 0 0;max-width:520px}
+.hero .cta{display:flex;flex-wrap:wrap;gap:16px;margin-top:40px}
+
+/* grids */
+.grid{display:grid;gap:24px;margin-top:48px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g5{grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
+.card-ph{height:300px;flex-direction:column;gap:12px}
+/* project card with image: pops toward the viewer on hover, title over a bottom-up black gradient */
+.proj{position:relative;display:block;height:300px;overflow:hidden;border:1px solid var(--line-2);background:repeating-linear-gradient(135deg,var(--panel) 0,var(--panel) 12px,var(--panel-2) 12px,var(--panel-2) 24px);transition:transform .35s ease,box-shadow .35s ease}
+.proj-img{position:absolute;inset:0;background-size:cover;background-position:center;transition:transform .5s ease}
+.proj::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,.5) 35%,rgba(0,0,0,0) 65%);transition:opacity .35s ease}
+.proj-title{position:absolute;z-index:1;left:24px;right:24px;bottom:20px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:32px;line-height:1;text-transform:uppercase;letter-spacing:.02em;color:var(--text)}
+.proj:hover,.proj:focus-visible{transform:translateY(-8px) scale(1.04);box-shadow:0 28px 56px rgba(0,0,0,.6);z-index:2}
+.proj:hover .proj-img,.proj:focus-visible .proj-img{transform:scale(1.06)}
+@media (prefers-reduced-motion:reduce){.proj,.proj-img{transition:none}.proj:hover,.proj:focus-visible{transform:none}.proj:hover .proj-img{transform:none}}
+.strip{display:flex;gap:16px;margin-top:24px;overflow-x:auto;padding-bottom:12px}
+/* bigger 1:2 cards, about 3 visible at a time; the rest scroll */
+.strip{scroll-snap-type:x mandatory}
+.strip > .proj{flex:0 0 calc((100% - 32px) / 3.2);height:auto;aspect-ratio:1/2;scroll-snap-align:start}
+/* room inside the scroller so the hover pop-out isn't clipped */
+.strip{padding:24px 12px;margin-inline:-12px;scroll-padding-inline:12px}
+/* work-in-progress cards: big diagonal label across the card */
+.proj.wip{container-type:size;display:flex;align-items:center;justify-content:center}
+/* hover preview: project details */
+.proj-body{position:absolute;z-index:1;left:24px;right:24px;bottom:20px}
+.proj-body .proj-title{position:static;display:block}
+.proj-info{margin:0;display:grid;grid-template-columns:auto 1fr;column-gap:16px;row-gap:4px;max-height:0;opacity:0;overflow:hidden;transform:translateY(8px);transition:max-height .35s ease,opacity .3s ease,transform .35s ease,margin-top .35s ease}
+.proj-info div{display:contents}
+.proj-info dt{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);align-self:center}
+.proj-info dd{margin:0;font-size:14px;color:var(--text)}
+.proj.has-info .proj-img{transition:transform .5s ease,filter .35s ease}
+.proj.has-info:hover .proj-img,.proj.has-info:focus-visible .proj-img{filter:brightness(.4)}
+.proj.has-info:hover .proj-info,.proj.has-info:focus-visible .proj-info{max-height:160px;opacity:1;transform:none;margin-top:14px}
+.wip-label{position:relative;display:block;transform:rotate(-45deg);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:56cqw;line-height:1;letter-spacing:.04em;color:var(--line-2);white-space:nowrap}
+.hint{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-top:12px}
+.sq{aspect-ratio:1/1}
+.g5 > .proj{height:auto;aspect-ratio:1/1}
+.g5 > .proj .proj-title{font-size:22px;left:16px;right:16px;bottom:14px}
+
+/* about */
+.about{display:flex;flex-wrap:wrap;gap:48px;margin-top:48px;align-items:center}
+.about-img{flex:1 1 480px;min-width:0;width:100%;max-width:100%;aspect-ratio:3/2;object-fit:cover;display:block;border:1px solid var(--line-2)}
+.about .txt{flex:1 1 400px;min-width:0}
+.about p{font-size:17px;line-height:1.6;color:var(--text-2);margin:24px 0 0}
+.about .quote{font-size:44px;line-height:1.1;text-transform:uppercase;letter-spacing:.02em;color:var(--text);margin:0}
+.tool{height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:var(--panel);border:1px solid var(--line-2);padding:16px;text-align:center}
+.tool img{max-height:44px;max-width:80%;object-fit:contain}
+.tool span{font-size:13px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--text-2)}
+
+/* career */
+.job{border-top:3px solid var(--line-2);background:var(--panel);padding:32px}
+.job.now{border-top-color:var(--accent)}
+.job .when{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.job .h2{font-size:32px;margin-top:12px}
+.job-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:12px}
+.job-head .h2{margin-top:0}
+.job-logo{height:48px;width:auto;flex:none;background:#fff;padding:4px;border-radius:4px}
+.job-logo-lg{height:80px;margin-block:-16px}
+.job-logo-bare{background:none;padding:0;border-radius:0}
+.job .role{font-size:15px;color:var(--text-2);margin-top:8px}
+.job ul{margin:24px 0 0;padding-left:20px;color:var(--text-2);line-height:1.9;font-size:15px}
+
+/* contact */
+.contact{display:flex;flex-wrap:wrap;gap:64px}
+.contact .info{flex:1 1 360px;min-width:0}
+.contact form{flex:1 1 440px;min-width:0;display:flex;flex-direction:column;gap:20px}
+.contact .city{font-size:18px;color:var(--text-2);margin:32px 0 0}
+.mail{display:block;font-size:18px;margin-top:12px;border-bottom:1px solid var(--line-2);width:max-content;max-width:100%;padding-bottom:4px;overflow-wrap:anywhere}
+.social{display:flex;gap:16px;margin-top:32px}
+.social a{width:48px;height:48px;border:1px solid var(--line-2);display:flex;align-items:center;justify-content:center}
+label{display:block;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+input,textarea{width:100%;min-height:48px;background:var(--panel);border:1px solid var(--line-2);color:var(--text);font-family:inherit;font-size:16px;padding:0 14px}
+textarea{height:140px;padding:12px 14px;resize:none}
+
+footer .bar{padding:28px 24px;font-size:14px;color:var(--muted)}
+footer a{letter-spacing:.14em;text-transform:uppercase}
+
+/* tablet */
+@media (max-width:900px){
+  .wrap{padding:72px 20px}
+  .h-xl{font-size:60px}
+  .h-lg{font-size:44px}
+  .g3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g5{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .strip > .proj{flex-basis:calc((100% - 16px) / 2.2)}
+  .about .quote{font-size:36px}
+  .hero .wrap{min-height:540px}
+}
+/* phone */
+@media (max-width:560px){
+  .wrap{padding:48px 16px}
+  .bar{padding:12px 16px}
+  nav{gap:20px;font-size:13px}
+  .brand .h2{font-size:22px}
+  .logo{width:44px;height:44px}
+  .h-xl{font-size:52px}
+  .h-lg{font-size:40px}
+  .hero p{font-size:16px}
+  .hero .wrap{min-height:580px}
+  .hero-bg::after{background:linear-gradient(90deg,rgba(13,20,23,.92) 0%,rgba(13,20,23,.75) 50%,rgba(13,20,23,.45) 100%)}
+  .hero .cta .btn{width:100%}
+  .g2,.g3{grid-template-columns:1fr}
+  .g5{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid{margin-top:28px}
+  .card-ph{height:190px}
+  .proj{height:190px}
+  .proj-title{font-size:26px;left:16px;bottom:14px}
+  .strip{margin-top:16px}
+  .strip > .proj{flex-basis:calc((100% - 16px) / 1.4)}
+  .about .quote{font-size:30px}
+  .job{padding:24px}
+  .job .h2{font-size:28px}
+  .job-logo{height:36px}
+  .job-logo-lg{height:56px;margin-block:-10px}
+  .contact{gap:40px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <a class="brand" href="#top">
+      <div class="ph logo">Logo</div>
+      <div><div class="h2">Nicola Vischi</div><small>Junior Level / Narrative Designer</small></div>
+    </a>
+    <nav aria-label="Main">
+      <a href="#top">Home</a>
+      <a href="#portfolio">Portfolio</a>
+      <a href="#about">About me</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section id="top" class="hero">
+  <!-- Animated background (GIF in img/ next to index.html) -->
+  <div class="hero-bg" aria-hidden="true">
+    <img src="img/hero.gif" alt="">
+  </div>
+  <div class="wrap">
+    <div class="copy">
+      <h1 class="h2 h-xl">I'm a Junior Level Designer</h1>
+      <p>I studied and specialized in Level and Narrative Design at GAME SUP. Now I aim to find my place, where I can create with passion!</p>
+      <div class="cta">
+        <a class="btn btn-fill" href="#portfolio">Discover</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="about" class="wrap">
+  <div class="eyebrow">01 · About</div>
+  <h2 class="h2 h-lg">About me</h2>
+  <div class="about">
+    <img class="about-img" src="img/about.jpg" alt="Group photo with my game development class">
+    <div class="txt">
+      <p class="h2 quote">“It's a work of passion, and I have plenty to share”&nbsp;💪</p>
+      <p>I've always wanted to <strong>make games that inspire passion in others</strong>. After meeting <strong>many people like me</strong> during my studies, I was sure this was <strong>the right path for me</strong>, and now I can't wait to <strong>join a studio</strong> to fulfil my dream!</p>
+    </div>
+  </div>
+</section>
+
+<section id="portfolio" class="alt">
+  <div class="wrap">
+    <div class="eyebrow">02 · Work</div>
+    <h2 class="h2 h-lg">Projects I have worked on</h2>
+    <!-- Each card: put the image in img/ with the name below, and replace href="#" with the project link -->
+    <div class="grid g2">
+      <a class="proj has-info" href="the-flowering-dead.html">
+        <div class="proj-img" style="background-image:url(img/the-flowering-dead.jpg);background-position:center top"></div>
+        <div class="proj-body"><span class="proj-title">The Flowering Dead</span><dl class="proj-info"><div><dt>Year</dt><dd>2026</dd></div><div><dt>Role</dt><dd>Level Designer</dd></div><div><dt>Engine</dt><dd>UE5</dd></div><div><dt>Team</dt><dd>16</dd></div><div><dt>Duration</dt><dd>6 weeks</dd></div></dl></div>
+      </a>
+      <a class="proj has-info" href="the-initiate.html">
+        <div class="proj-img" style="background-image:url(img/the-initiate-card.jpg);background-position:center top"></div>
+        <div class="proj-body"><span class="proj-title">The Initiate</span><dl class="proj-info"><div><dt>Year</dt><dd>2026</dd></div><div><dt>Role</dt><dd>Narrative Design</dd></div><div><dt>Engine</dt><dd>UE5</dd></div><div><dt>Team</dt><dd>14</dd></div><div><dt>Duration</dt><dd>4 weeks</dd></div></dl></div>
+      </a>
+      <a class="proj has-info" href="porco-rosso.html">
+        <div class="proj-img" style="background:var(--panel) url(img/porco-rosso.png) no-repeat center 38%/auto 52%"></div>
+        <div class="proj-body"><span class="proj-title">Pilot's Heaven</span><dl class="proj-info"><div><dt>Year</dt><dd>2026</dd></div><div><dt>Role</dt><dd>Narrative Design</dd></div><div><dt>Engine</dt><dd>UE5</dd></div><div><dt>Team</dt><dd>13</dd></div><div><dt>Duration</dt><dd>3 weeks</dd></div></dl></div>
+      </a>
+      <a class="proj has-info" href="bladerunner-reborn.html">
+        <div class="proj-img" style="background-image:url(img/bladerunner-reborn.jpg);background-position:center top"></div>
+        <div class="proj-body"><span class="proj-title">BladeRunner Re:Born</span><dl class="proj-info"><div><dt>Year</dt><dd>2026</dd></div><div><dt>Role</dt><dd>Narrative Design</dd></div><div><dt>Engine</dt><dd>Unity</dd></div><div><dt>Team</dt><dd>15</dd></div><div><dt>Duration</dt><dd>3 weeks</dd></div></dl></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="personal" class="wrap">
+  <div class="eyebrow">03 · Personal</div>
+  <h2 class="h2 h-lg">My personal projects</h2>
+  <div class="strip">
+    <!-- Images: put level-01.jpg ... in img/ -->
+    <a class="proj has-info" href="pestilence.html"><div class="proj-img" style="background-image:url(img/pestilence.jpg)"></div><div class="proj-body"><span class="proj-title">Pestilence</span><dl class="proj-info"><div><dt>Year</dt><dd>2026</dd></div><div><dt>Role</dt><dd>Multirole</dd></div><div><dt>Engine</dt><dd>UE5</dd></div><div><dt>Team</dt><dd>Solo</dd></div><div><dt>Duration</dt><dd>3 weeks</dd></div></dl></div></a>
+    <div class="proj"><div class="proj-img" style="background-image:url(img/level-02.jpg)"></div><span class="proj-title">Frozen Spirits</span></div>
+    <div class="proj"><div class="proj-img" style="background-image:url(img/level-03.jpg)"></div><span class="proj-title">Level 03</span></div>
+    <div class="proj wip"><span class="wip-label">WIP</span></div><div class="proj wip"><span class="wip-label">WIP</span></div><div class="proj wip"><span class="wip-label">WIP</span></div><div class="proj wip"><span class="wip-label">WIP</span></div>
+  </div>
+  <div class="hint">Scroll to see all →</div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="eyebrow">04 · Studies</div>
+    <h2 class="h2 h-lg">Some student projects</h2>
+    <div class="strip">
+      <!-- Images: put student-a.jpg ... game-jam.jpg in img/ -->
+      <div class="proj"><div class="proj-img" style="background-image:url(img/student-a.jpg)"></div><span class="proj-title">Thief</span></div>
+      <div class="proj"><div class="proj-img" style="background-image:url(img/student-b.jpg)"></div><span class="proj-title">Indiana Jones: The Great Circle</span></div>
+      <div class="proj"><div class="proj-img" style="background-image:url(img/student-c.jpg)"></div><span class="proj-title">Project C</span></div>
+      <div class="proj"><div class="proj-img" style="background-image:url(img/student-d.jpg)"></div><span class="proj-title">Project D</span></div>
+      <a class="proj" href="#"><div class="proj-img" style="background-image:url(img/game-jam.jpg)"></div><span class="proj-title">Game jam →</span></a>
+    </div>
+    <div class="hint">Scroll to see all →</div>
+  </div>
+</section>
+
+<section class="wrap">
+    <div class="eyebrow">05 · Career</div>
+    <h2 class="h2 h-lg">My career</h2>
+    <div class="grid g2">
+      <div class="job now">
+        <div class="when">2023 – 2027</div>
+        <div class="job-head"><div class="h2">GAME SUP</div><img class="job-logo job-logo-bare" src="img/game-sup.png" alt="GAME SUP logo"></div>
+        <div class="role">Game Design</div>
+      </div>
+      <div class="job">
+        <div class="when">2017 – 2022</div>
+        <div class="job-head"><div class="h2">ITI Copernico</div><img class="job-logo job-logo-lg" src="img/iti-copernico.png" alt="ITI Copernico logo"></div>
+        <div class="role">Computer Science</div>
+      </div>
+    </div>
+  <h3 class="h2 h-md" style="margin-top:80px">Software</h3>
+  <div class="grid g5 logos" style="margin-top:24px">
+    <!-- Put the official logo files (light/white versions work best on the dark background) in img/logos/ with these names. -->
+    <div class="tool"><img src="img/logos/unreal-engine.svg" alt="" onerror="this.remove()"><span>Unreal Engine 5</span></div>
+    <div class="tool"><img src="img/logos/unity.svg" alt="" onerror="this.remove()"><span>Unity</span></div>
+    <div class="tool"><img src="img/logos/adobe.svg" alt="" onerror="this.remove()"><span>Adobe Suite</span></div>
+    <div class="tool"><img src="img/logos/office.svg" alt="" onerror="this.remove()"><span>Office</span></div>
+    <div class="tool"><img src="img/logos/blender.svg" alt="" onerror="this.remove()"><span>Blender</span></div>
+  </div>
+  <a class="link" href="#portfolio">And a bit more… Skills →</a>
+</section>
+
+<section id="contact" class="alt" style="border-bottom:0">
+  <div class="wrap contact">
+    <div class="info">
+      <div class="eyebrow">06 · Contact</div>
+      <h2 class="h2 h-lg">Contact</h2>
+      <p class="city">Lyon, Auvergne-Rhône-Alpes</p>
+      <a class="mail" href="mailto:nicolavischi3@gmail.com">nicolavischi3@gmail.com</a>
+      <div class="social">
+        <a href="https://www.linkedin.com/in/nicola-vischi-27b385314/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E9EEEE" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a>
+        <a href="#" aria-label="Download CV" title="Download CV"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E9EEEE" stroke-width="1.6" aria-hidden="true"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg></a>
+      </div>
+    </div>
+    <!-- On Netlify the form works as-is once deployed (netlify attribute + hidden field below). -->
+    <form name="contact" method="POST" data-netlify="true">
+      <input type="hidden" name="form-name" value="contact">
+      <div><label for="name">Name</label><input id="name" name="name" type="text" required></div>
+      <div><label for="email">Email</label><input id="email" name="email" type="email" required></div>
+      <div><label for="msg">Message</label><textarea id="msg" name="message" required></textarea></div>
+      <div><button class="btn btn-fill" type="submit">Send</button></div>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<footer style="border-top:1px solid var(--line)">
+  <div class="bar" style="justify-content:space-between">
+    <span>©2026 Nicola Vischi</span>
+    <a href="#top">Back to top ↑</a>
+  </div>
+</footer>
+
+</body>
+</html>

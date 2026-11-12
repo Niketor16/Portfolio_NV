@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Initiate | Nicola Vischi</title>
+<meta name="description" content="The Initiate: level design case study.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#E8512B;
+  --bg:#0D1417; --bg-alt:#111B20; --panel:#16222A; --panel-2:#1B2A32;
+  --line:#22313A; --line-2:#2F424C;
+  --text:#E9EEEE; --text-2:#B5C4C8; --muted:#8FA3A9; --faint:#7D9299;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1200px;margin:0 auto;padding:96px 24px}
+.alt{background:var(--bg-alt);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.h2{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin:0;line-height:1;color:var(--text)}
+.h-xl{font-size:80px;margin-top:20px}
+.h-lg{font-size:56px;margin-top:12px}
+.h-md{font-size:32px}
+.eyebrow{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.ph{background:repeating-linear-gradient(135deg,var(--panel) 0,var(--panel) 12px,var(--panel-2) 12px,var(--panel-2) 24px);border:1px solid var(--line-2);color:var(--faint);display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 28px;font-weight:700;font-size:14px;letter-spacing:.12em;text-transform:uppercase;border:0;cursor:pointer;font-family:inherit}
+.btn-fill{background:var(--accent);color:var(--bg)}
+.btn-fill:hover{filter:brightness(1.1)}
+.btn-line{border:1.5px solid var(--text);color:var(--text)}
+.btn-line:hover{background:var(--text);color:var(--bg)}
+.link{display:inline-block;margin-top:40px;font-size:15px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--accent);border-bottom:2px solid var(--accent);padding-bottom:4px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* header */
+header{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar{max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:16px}
+.logo{width:56px;height:56px;border-radius:50%;font-size:10px}
+.brand .h2{font-size:28px}
+.brand small{display:block;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+nav{display:flex;flex-wrap:wrap;gap:32px;font-size:14px;letter-spacing:.14em;text-transform:uppercase;font-weight:500}
+nav a{color:var(--text-2)}
+nav a:hover{color:var(--text)}
+
+/* hero: image fills the whole section, text on top */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.hero-bg{position:absolute;inset:0;z-index:0;overflow:hidden;background:var(--bg)}
+.hero-bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+/* gradient over the image: dark on the left, lighter toward the right */
+.hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(13,20,23,.96) 0%,rgba(13,20,23,.8) 30%,rgba(13,20,23,.4) 65%,rgba(13,20,23,.08) 100%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1;display:flex;align-items:center;min-height:640px}
+.hero .copy{max-width:640px;min-width:0}
+.hero .h-xl{margin-top:0}
+.hero p{font-size:18px;line-height:1.6;color:var(--text-2);margin:28px 0 0;max-width:520px}
+.hero .cta{display:flex;flex-wrap:wrap;gap:16px;margin-top:40px}
+
+/* grids */
+.grid{display:grid;gap:24px;margin-top:48px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g5{grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
+.card-ph{height:300px;flex-direction:column;gap:12px}
+/* project card with image: pops toward the viewer on hover, title over a bottom-up black gradient */
+.proj{position:relative;display:block;height:300px;overflow:hidden;border:1px solid var(--line-2);background:repeating-linear-gradient(135deg,var(--panel) 0,var(--panel) 12px,var(--panel-2) 12px,var(--panel-2) 24px);transition:transform .35s ease,box-shadow .35s ease}
+.proj-img{position:absolute;inset:0;background-size:cover;background-position:center;transition:transform .5s ease}
+.proj::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,.5) 35%,rgba(0,0,0,0) 65%);transition:opacity .35s ease}
+.proj-title{position:absolute;z-index:1;left:24px;right:24px;bottom:20px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:32px;line-height:1;text-transform:uppercase;letter-spacing:.02em;color:var(--text)}
+.proj:hover,.proj:focus-visible{transform:translateY(-8px) scale(1.04);box-shadow:0 28px 56px rgba(0,0,0,.6);z-index:2}
+.proj:hover .proj-img,.proj:focus-visible .proj-img{transform:scale(1.06)}
+@media (prefers-reduced-motion:reduce){.proj,.proj-img{transition:none}.proj:hover,.proj:focus-visible{transform:none}.proj:hover .proj-img{transform:none}}
+.strip{display:flex;gap:16px;margin-top:24px;overflow-x:auto;padding-bottom:12px}
+/* bigger 1:2 cards, about 3 visible at a time; the rest scroll */
+.strip{scroll-snap-type:x mandatory}
+.strip > .proj{flex:0 0 calc((100% - 32px) / 3.2);height:auto;aspect-ratio:1/2;scroll-snap-align:start}
+/* room inside the scroller so the hover pop-out isn't clipped */
+.strip{padding:24px 12px;margin-inline:-12px;scroll-padding-inline:12px}
+/* work-in-progress cards: big diagonal label across the card */
+.proj.wip{container-type:size;display:flex;align-items:center;justify-content:center}
+.wip-label{position:relative;display:block;transform:rotate(-45deg);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:56cqw;line-height:1;letter-spacing:.04em;color:var(--line-2);white-space:nowrap}
+.hint{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-top:12px}
+.sq{aspect-ratio:1/1}
+.g5 > .proj{height:auto;aspect-ratio:1/1}
+.g5 > .proj .proj-title{font-size:22px;left:16px;right:16px;bottom:14px}
+
+/* about */
+.about{display:flex;flex-wrap:wrap;gap:48px;margin-top:48px;align-items:center}
+.about-img{flex:1 1 480px;min-width:0;width:100%;max-width:100%;aspect-ratio:3/2;object-fit:cover;display:block;border:1px solid var(--line-2)}
+.about .txt{flex:1 1 400px;min-width:0}
+.about p{font-size:17px;line-height:1.6;color:var(--text-2);margin:24px 0 0}
+.about .quote{font-size:44px;line-height:1.1;text-transform:uppercase;letter-spacing:.02em;color:var(--text);margin:0}
+.tool{height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:var(--panel);border:1px solid var(--line-2);padding:16px;text-align:center}
+.tool img{max-height:44px;max-width:80%;object-fit:contain}
+.tool span{font-size:13px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--text-2)}
+
+/* career */
+.job{border-top:3px solid var(--line-2);background:var(--panel);padding:32px}
+.job.now{border-top-color:var(--accent)}
+.job .when{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.job .h2{font-size:32px;margin-top:12px}
+.job-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:12px}
+.job-head .h2{margin-top:0}
+.job-logo{height:48px;width:auto;flex:none;background:#fff;padding:4px;border-radius:4px}
+.job-logo-lg{height:80px;margin-block:-16px}
+.job-logo-bare{background:none;padding:0;border-radius:0}
+.job .role{font-size:15px;color:var(--text-2);margin-top:8px}
+.job ul{margin:24px 0 0;padding-left:20px;color:var(--text-2);line-height:1.9;font-size:15px}
+
+/* contact */
+.contact{display:flex;flex-wrap:wrap;gap:64px}
+.contact .info{flex:1 1 360px;min-width:0}
+.contact form{flex:1 1 440px;min-width:0;display:flex;flex-direction:column;gap:20px}
+.contact .city{font-size:18px;color:var(--text-2);margin:32px 0 0}
+.mail{display:block;font-size:18px;margin-top:12px;border-bottom:1px solid var(--line-2);width:max-content;max-width:100%;padding-bottom:4px;overflow-wrap:anywhere}
+.social{display:flex;gap:16px;margin-top:32px}
+.social a{width:48px;height:48px;border:1px solid var(--line-2);display:flex;align-items:center;justify-content:center}
+label{display:block;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+input,textarea{width:100%;min-height:48px;background:var(--panel);border:1px solid var(--line-2);color:var(--text);font-family:inherit;font-size:16px;padding:0 14px}
+textarea{height:140px;padding:12px 14px;resize:none}
+
+footer .bar{padding:28px 24px;font-size:14px;color:var(--muted)}
+footer a{letter-spacing:.14em;text-transform:uppercase}
+
+/* tablet */
+@media (max-width:900px){
+  .wrap{padding:72px 20px}
+  .h-xl{font-size:60px}
+  .h-lg{font-size:44px}
+  .g3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g5{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .strip > .proj{flex-basis:calc((100% - 16px) / 2.2)}
+  .about .quote{font-size:36px}
+  .hero .wrap{min-height:540px}
+}
+/* phone */
+@media (max-width:560px){
+  .wrap{padding:48px 16px}
+  .bar{padding:12px 16px}
+  nav{gap:20px;font-size:13px}
+  .brand .h2{font-size:22px}
+  .logo{width:44px;height:44px}
+  .h-xl{font-size:52px}
+  .h-lg{font-size:40px}
+  .hero p{font-size:16px}
+  .hero .wrap{min-height:580px}
+  .hero-bg::after{background:linear-gradient(90deg,rgba(13,20,23,.92) 0%,rgba(13,20,23,.75) 50%,rgba(13,20,23,.45) 100%)}
+  .hero .cta .btn{width:100%}
+  .g2,.g3{grid-template-columns:1fr}
+  .g5{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid{margin-top:28px}
+  .card-ph{height:190px}
+  .proj{height:190px}
+  .proj-title{font-size:26px;left:16px;bottom:14px}
+  .strip{margin-top:16px}
+  .strip > .proj{flex-basis:calc((100% - 16px) / 1.4)}
+  .about .quote{font-size:30px}
+  .job{padding:24px}
+  .job .h2{font-size:28px}
+  .job-logo{height:36px}
+  .job-logo-lg{height:56px;margin-block:-10px}
+  .contact{gap:40px}
+}
+
+/* ===== project page ===== */
+.back{display:inline-flex;align-items:center;gap:8px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.back:hover{color:var(--text)}
+.p-hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.p-hero .ph{position:absolute;inset:0;border:0;z-index:0;align-items:flex-start;justify-content:flex-end;padding:24px}
+.p-hero .ph::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(13,20,23,.96) 0%,rgba(13,20,23,.55) 45%,rgba(13,20,23,.15) 100%)}
+.p-hero .wrap{position:relative;z-index:1;min-height:520px;display:flex;flex-direction:column;justify-content:flex-end}
+.p-hero .h-xl{margin-top:16px}
+.p-sub{font-size:20px;color:var(--text-2);margin-top:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:500}
+/* team: 5 per row, last row centered; name and LinkedIn under each photo */
+.team{display:flex;flex-wrap:wrap;justify-content:center;gap:32px 24px;margin-top:48px}
+.member{margin:0;min-width:0;flex:0 0 calc((100% - 96px) / 5)}
+.member-photo{aspect-ratio:1/1;max-width:100%}
+.member figcaption{margin-top:12px;text-align:center;overflow-wrap:anywhere;display:flex;flex-direction:column;gap:4px}
+.m-name{font-size:15px;font-weight:500;color:var(--text)}
+.m-role{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.m-link{display:inline-flex;align-items:center;justify-content:center;align-self:center;width:36px;height:36px;color:var(--muted);border:1px solid var(--line-2);transition:color .2s,border-color .2s}
+.m-link:hover,.m-link:focus-visible{color:var(--accent);border-color:var(--accent)}
+.rule{border-top:1px solid var(--line)}
+@media (max-width:900px){.member{flex-basis:calc((100% - 48px) / 3)}}
+@media (max-width:560px){.team{gap:24px 16px;margin-top:28px}.member{flex-basis:calc((100% - 16px) / 2)}}
+.facts{display:flex;flex-wrap:wrap;gap:12px 32px;margin-top:32px;padding-top:24px;border-top:1px solid var(--line-2)}
+.facts div{min-width:120px}
+.facts dt{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.facts dd{margin:6px 0 0;font-size:16px;color:var(--text)}
+.prose{max-width:68ch}
+.prose p{font-size:17px;line-height:1.7;color:var(--text-2);margin:20px 0 0}
+.prose strong{color:var(--text);font-weight:700}
+.split{display:flex;flex-wrap:wrap;gap:48px;margin-top:48px;align-items:center}
+.split > *{flex:1 1 420px;min-width:0}
+.split .ph{aspect-ratio:4/3;max-width:100%}
+.wide{aspect-ratio:16/9;margin-top:48px;max-width:100%}
+/* trailer preview: cover image with a play button; the YouTube player loads on click */
+.video-wrap{position:relative;margin-top:48px;aspect-ratio:16/9;max-width:100%;background:#000;border:1px solid var(--line-2);overflow:hidden}
+.video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.play-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:88px;height:88px;border-radius:50%;border:2px solid var(--text);background:rgba(13,20,23,.55);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .2s}
+.play-btn svg{margin-left:4px}
+.play-btn:hover,.play-btn:focus-visible{background:var(--accent);border-color:var(--accent);color:var(--bg);transform:translate(-50%,-50%) scale(1.06)}
+.video-wrap.playing .play-btn{display:none}
+.yt-link{display:inline-block;margin-top:12px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.yt-link:hover{color:var(--text)}
+@media (max-width:560px){.play-btn{width:64px;height:64px}.play-btn svg{width:26px;height:26px}}
+.steps{margin-top:48px;display:flex;flex-direction:column;gap:0;counter-reset:step}
+/* each step is a full-width band; bands alternate like the page sections */
+.step{padding-block:56px}
+.step:nth-child(odd){background:var(--bg-alt);box-shadow:0 0 0 100vmax var(--bg-alt);clip-path:inset(0 -100vmax)}
+.step{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:center}
+.step:nth-child(even) .ph{order:-1}
+.step .num{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.16em;color:var(--accent)}
+.step h3{font-size:36px;margin-top:8px}
+.step .ph{aspect-ratio:16/10;max-width:100%}
+.step-img{display:block;width:100%;max-width:100%;height:auto;border:1px solid var(--line-2)}
+.step-img-free{border:0;max-height:560px;object-fit:contain}
+.step:nth-child(even) .step-img{order:-1}
+@media (max-width:900px){.step:nth-child(even) .step-img{order:0}}
+.note{margin-top:56px;border-left:3px solid var(--accent);background:var(--panel);padding:24px 28px}
+.note h3{font-size:28px}
+.note + .note{margin-top:24px}
+/* document carousel: one page at a time, side arrows */
+.carousel{position:relative;margin-top:48px}
+.car-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none}
+.car-track::-webkit-scrollbar{display:none}
+.car-slide{flex:0 0 100%;aspect-ratio:16/9;scroll-snap-align:start}
+.car-doc{display:block;width:100%;height:auto;object-fit:contain;background:#000;border:1px solid var(--line-2)}
+.car-btn{position:absolute;top:50%;transform:translateY(-50%);width:56px;height:56px;display:flex;align-items:center;justify-content:center;background:rgba(13,20,23,.85);color:var(--text);border:1px solid var(--line-2);font-size:22px;cursor:pointer;transition:background .2s,opacity .2s}
+.car-btn:hover{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.car-btn:disabled{opacity:.25;cursor:default;background:rgba(13,20,23,.85);color:var(--text);border-color:var(--line-2)}
+.car-prev{left:16px}
+.car-next{right:16px}
+.car-count{margin-top:16px;text-align:center;font-size:13px;letter-spacing:.16em;color:var(--muted);font-variant-numeric:tabular-nums}
+@media (max-width:560px){.car-btn{width:44px;height:44px;font-size:18px}.car-prev{left:8px}.car-next{right:8px}}
+/* small image carousel (About the concept) */
+.car-mini{margin-top:0}
+.car-mini .car-track{align-items:center}
+.mini-img{display:block;width:100%;height:auto;aspect-ratio:2/1;object-fit:cover;background:#000}
+.car-mini .car-btn{width:44px;height:44px;font-size:18px}
+.car-mini .car-prev{left:10px}.car-mini .car-next{right:10px}
+.mini-count{margin-top:10px;text-align:right}
+/* document scrollbar */
+.doc-bar{margin-top:20px;display:flex;align-items:center;gap:20px}
+.doc-bar .car-count{margin-top:0;flex:0 0 auto;min-width:64px;text-align:right}
+.doc-range{flex:1;-webkit-appearance:none;appearance:none;height:28px;background:transparent;cursor:pointer;margin:0;padding:0;border:0;box-shadow:none;min-height:0;--p:0%}
+.doc-range:focus{outline:none}
+.doc-range::-webkit-slider-runnable-track{height:6px;background:linear-gradient(90deg,var(--accent) var(--p),var(--line-2) var(--p))}
+.doc-range::-moz-range-track{height:6px;background:var(--line-2)}
+.doc-range::-moz-range-progress{height:6px;background:var(--accent)}
+.doc-range::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;margin-top:-8px;background:var(--text);border:3px solid var(--accent);border-radius:0;transition:transform .15s}
+.doc-range::-moz-range-thumb{width:16px;height:16px;background:var(--text);border:3px solid var(--accent);border-radius:0}
+.doc-range:hover::-webkit-slider-thumb,.doc-range:focus-visible::-webkit-slider-thumb{transform:scale(1.15)}
+.doc-range:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.next{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+@media (max-width:900px){.step{grid-template-columns:1fr;gap:20px}.step:nth-child(even) .ph{order:0}}
+@media (max-width:560px){.p-hero .wrap{min-height:420px}.step h3{font-size:30px}.p-sub{font-size:16px}}
+</style>
+<script>
+/* always open a project page at the top */
+if('scrollRestoration' in history){history.scrollRestoration='manual';}
+function toTop(){if(!location.hash||location.hash==='#top'){document.documentElement.style.scrollBehavior='auto';window.scrollTo(0,0);document.documentElement.style.scrollBehavior='';}}
+document.addEventListener('DOMContentLoaded',toTop);
+window.addEventListener('load',toTop);
+window.addEventListener('pageshow',toTop);
+</script>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <a class="brand" href="index.html#top">
+      <div class="ph logo">Logo</div>
+      <div><div class="h2">Nicola Vischi</div><small>Junior Level / Narrative Designer</small></div>
+    </a>
+    <nav aria-label="Main">
+      <a href="index.html#top">Home</a>
+      <a href="index.html#portfolio">Portfolio</a>
+      <a href="index.html#about">About me</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- 1. Title + key facts. Cover image: add style="background:url(img/the-initiate.jpg) center/cover" to the .ph below -->
+<section id="top" class="p-hero">
+  <div class="ph" aria-hidden="true" style="background:url(img/the-initiate.jpg) center/cover;font-size:0"></div>
+  <div class="wrap">
+    <a class="back" href="index.html#portfolio">← Back to projects</a>
+    <h1 class="h2 h-xl">The Initiate</h1>
+    <dl class="facts">
+      <div><dt>Year</dt><dd>2026</dd></div>
+      <div><dt>Role</dt><dd>Narrative Design</dd></div>
+      <div><dt>Engine</dt><dd>UE5</dd></div>
+      <div><dt>Team</dt><dd>14</dd></div>
+      <div><dt>Duration</dt><dd>4 weeks</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- 2. Pitch -->
+<section class="wrap">
+  <div class="eyebrow">Pitch</div>
+  <h2 class="h2 h-lg">The game in a few lines</h2>
+  <div class="prose">
+    <p>This is an <strong>action-adventure RPG</strong> in a <strong>fantasy world</strong> where a <strong>primordial energy</strong> that keeps balance in the world is threatened by <strong>corrupted shamans</strong> who want its power.</p><p>You play as a <strong>young warrior</strong> who fights against them with <strong>spiritual powers</strong> and <strong>close combat weapons</strong>.</p>
+  </div>
+  <!-- Trailer or gameplay video: replace this box with your YouTube link or a video -->
+  <div class="video-wrap yt" data-yt="JMOe6LnX-K8" style="background:url(https://i.ytimg.com/vi/JMOe6LnX-K8/maxresdefault.jpg) center/cover,url(img/the-initiate-card.jpg) center top/cover #000">
+    <button class="play-btn" type="button" aria-label="Play the trailer"><svg width="34" height="34" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></button>
+  </div>
+  <a class="yt-link" href="https://www.youtube.com/watch?v=JMOe6LnX-K8" target="_blank" rel="noopener">Watch on YouTube ↗</a>
+</section>
+
+<!-- 3. About the concept -->
+<!-- Team: 14 members. Photo: add style="background:url(img/team-NAME.jpg) center/cover;font-size:0" to a .member-photo LinkedIn: replace href="#" in each .m-link with the profile URL -->
+<section class="alt">
+  <div class="wrap">
+    <div class="eyebrow">Team</div>
+    <h2 class="h2 h-lg">The people behind it</h2>
+    <div class="team">
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Kaan Yirtikgoz</span><a class="m-link" href="https://www.linkedin.com/in/kaan-yirtikgoz-29a363256/" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Lylian Armant</span><a class="m-link" href="https://www.linkedin.com/in/lylian-armant-8b217926a/" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Anaïs Lacoste</span><a class="m-link" href="https://www.linkedin.com/in/anaïs-lacoste-891315225/" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Léa Libert</span><a class="m-link" href="https://www.linkedin.com/in/léa-libert/" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Vincent Sanchez</span><a class="m-link" href="https://www.linkedin.com/in/vincent-sanchez-50844b375/" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Thibault Merle</span><a class="m-link" href="https://www.linkedin.com/in/thibault-merle-946187311/" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Alexandre Berger</span><a class="m-link" href="https://www.linkedin.com/in/alexandre-berger-662355358/" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Lisa Canovas</span><a class="m-link" href="https://www.linkedin.com/in/lisa-canovas-vfx/" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Matthias Gimenez</span><a class="m-link" href="https://www.linkedin.com/in/matthias-gimenez-ld/" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Nicola Vischi</span><a class="m-link" href="https://www.linkedin.com/in/nicola-vischi-27b385314/" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Malo Fougères</span><a class="m-link" href="https://www.linkedin.com/in/malo-fougères-65476938b/" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Méline Billot-Biota</span><a class="m-link" href="https://www.linkedin.com/in/méline-billot-biota-85a3b02b6/" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Sarah Ounali</span><a class="m-link" href="https://www.linkedin.com/in/sarahounali/" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+      <figure class="member"><div class="ph member-photo">Photo</div><figcaption><span class="m-name">Tess Bornard</span><a class="m-link" href="https://www.linkedin.com/in/tess-bornard-1251bb3b3/" target="_blank" rel="noopener" aria-label="LinkedIn profile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg></a></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+    <div class="eyebrow">About the concept</div>
+    <h2 class="h2 h-lg">Where the idea came from</h2>
+    <div class="split">
+      <div class="prose">
+        <p><strong>Avatar</strong> was one of the <strong>main references</strong> used while creating this universe.</p>
+        <p>I found the <strong>relationship between creatures, humans and an entity above them all</strong> really interesting.</p>
+        <p>To accompany the narrative, we also wanted <strong>engaging gameplay</strong>, so we decided to have <strong>melee combat</strong> inspired by <strong>hack &rsquo;n&rsquo; slash games</strong> like <strong>Devil May Cry</strong>, along with a <strong>skill tree</strong> for the <strong>RPG component</strong>.</p>
+      </div>
+      <div class="mini">
+        <div class="carousel car-mini" aria-roledescription="carousel" aria-label="Concept images">
+          <div class="car-track" tabindex="0">
+            <img class="car-slide mini-img" src="img/the-initiate.jpg" alt="The Initiate key art">
+            <img class="car-slide mini-img" src="img/ini-skill-tree.jpg" alt="Skill tree concept: purple and golden veins of energy spread across a character's chest, with locked skill nodes along them" loading="lazy">
+          </div>
+          <button class="car-btn car-prev" type="button" aria-label="Previous image">&#8592;</button>
+          <button class="car-btn car-next" type="button" aria-label="Next image">&#8594;</button>
+        </div>
+        <div class="car-count mini-count" aria-live="polite"><span class="car-now">1</span> / <span class="car-total">2</span></div>
+      </div>
+    </div>
+</section>
+
+<!-- 4. Process -->
+<div class="rule"></div>
+<section class="wrap">
+  <div class="eyebrow">My process</div>
+  <h2 class="h2 h-lg">From idea to playable level</h2>
+  <div class="steps">
+    <div class="step">
+      <div><div class="num">STEP 01</div><h3 class="h2">Scenario</h3><div class="prose"><p>To set up the scenario, I needed to create a <strong>strong foundation for the world itself</strong>. By creating a <strong>world bible</strong>, I structured the universe into <strong>different regions</strong>, where people live in different ways, with <strong>different climates, resources and creatures</strong>.</p><p>Now I had enough to work on <strong>multiple characters</strong> and develop a <strong>scenario for the whole game</strong>, exploring <strong>different personality constructs</strong>.</p></div></div>
+      <img class="step-img" src="img/ini-ndd/page-40.jpg" alt="Narrative design document, page 40: Universe – Creatures">
+    </div>
+    <div class="step">
+      <div><div class="num">STEP 02</div><h3 class="h2">Universe</h3><div class="prose"><p>I liked the idea that <strong>all living beings are linked spiritually</strong> by a <strong>primordial energy</strong>. I wanted to create a type of <strong>creature charged with defending the balance</strong> of this energy between races, but this caused <strong>coherence problems</strong>.</p><p>So I <strong>reworked the foundations of my world&rsquo;s origins</strong> and <strong>rewrote how the energy flows between races</strong>.</p></div></div>
+      <img class="step-img" src="img/ini-ndd/page-02.jpg" alt="Narrative design document, Universe – Overview: the Receptacles, the first creatures, were created from Kunda, the spiritual energy of the planet">
+    </div>
+    <div class="step">
+      <div><div class="num">STEP 03</div><h3 class="h2">World conception</h3><div class="prose"><p>I needed to create <strong>populations that survive thanks to cooperation</strong> with other tribes, since I wanted to reinforce the aspect of <strong>balance between races</strong> that <strong>help each other</strong> if needed.</p><p>I <strong>researched a lot</strong> to understand <strong>how humans function in tribes</strong>, how they manage <strong>hierarchy and rules</strong> inside their territory, and how they <strong>interact and exchange with others</strong>.</p><p>Besides, I divided the world into <strong>five different regions</strong>, each with its own characteristics, giving every civilisation <strong>distinctive features</strong> that make it <strong>unique and memorable</strong>.</p></div></div>
+      <img class="step-img" src="img/ini-ndd/page-24.jpg" alt="Narrative design document, page 24: Universe – Civilization">
+    </div>
+    <div class="step">
+      <div><div class="num">STEP 04</div><h3 class="h2">Characters evolution</h3><div class="prose"><p>For this prototype I created <strong>four different characters</strong>: a <strong>main antagonist</strong>, his <strong>sidekick</strong>, a <strong>main character</strong> and a <strong>secondary character</strong> used mainly to give more <strong>depth to the main character&rsquo;s backstory</strong>.</p><p>I wanted the players to experience a <strong>story of revenge and fighting injustice</strong>. To do that, I thought about how to <strong>shape the story and its events</strong> to <strong>capture the player&rsquo;s empathy</strong>, giving a <strong>sense of belonging</strong> in this world.</p></div></div>
+      <img class="step-img" src="img/ini-ndd/page-61.jpg" alt="Narrative design document, page 61: character sheet of Almerique">
+    </div>
+    <div class="step">
+      <div><div class="num">STEP 05</div><h3 class="h2">Cinematics</h3><div class="prose"><p>I had the occasion to <strong>integrate cinematics</strong> into the prototype to give more details about the <strong>story and characters&rsquo; lore</strong>.</p><p>I <strong>wrote dialogues</strong> in cooperation with a <strong>2D artist</strong> who drew the cinematics, researched <strong>sound effects</strong> for the dialogues, and wrote a <strong>musical riff</strong> to sustain the <strong>ambience</strong> I wanted during the cinematic.</p><p>I had to make sure I <strong>communicated well with the artist</strong>, so that the <strong>colors and perspective</strong> matched my intentions and gave more <strong>credibility to the characters</strong>.</p></div></div>
+      <img class="step-img step-img-free" src="img/ini-cinematic.jpg" alt="Cinematic frame: three hooded figures in ceremonial robes look down from a balcony beneath an ornate dome">
+    </div>
+  </div>
+  <div class="note">
+    <h3 class="h2">The challenges</h3>
+    <div class="prose"><p>It was the <strong>first time</strong> I created a <strong>narrative bible</strong>. It was challenging to think about the <strong>why, how and what for</strong> of the different aspects of the world: its <strong>logic</strong>, the <strong>characters&rsquo; behaviour</strong>, the <strong>tribes&rsquo; traditions</strong>, the <strong>geography</strong>, the <strong>flora and fauna</strong>.</p><p><strong>Nothing was made just to fill the blank spaces</strong>, but to <strong>serve a purpose</strong>.</p></div>
+  </div>
+  <div class="note">
+    <h3 class="h2">Problems encountered</h3>
+    <div class="prose"><p><strong>Coherence was hard to maintain</strong> with all these elements that <strong>interact with each other</strong>. I wanted to <strong>stay true to the core ideas</strong> I had for this project, but I needed to <strong>discard some of them</strong> to preserve a <strong>logical world that works in all its aspects</strong>.</p><p>In some cases I added <strong>too many details</strong> that <strong>created confusion</strong> instead of adding flavour to the content.</p><p>Accordingly, I learned that <strong>details aren&rsquo;t necessarily always good</strong> for the well-being of a project.</p></div>
+  </div>
+</section>
+
+<!-- 5. Production example: pages of the narrative design document -->
+<section class="alt">
+  <div class="wrap">
+    <div class="eyebrow">Production example</div>
+    <h2 class="h2 h-lg">Narrative design document</h2>
+    <div class="carousel" aria-roledescription="carousel" aria-label="Narrative design document pages">
+      <div class="car-track" id="docTrack" tabindex="0">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-01.jpg" alt="Narrative design document, page 1: Title" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-02.jpg" alt="Narrative design document, page 2: Universe – Overview" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-03.jpg" alt="Narrative design document, page 3: Universe – Tone" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-04.jpg" alt="Narrative design document, page 4: Universe – World Origins" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-05.jpg" alt="Narrative design document, page 5: Universe – World Origins" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-06.jpg" alt="Narrative design document, page 6: Universe – World Origins" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-07.jpg" alt="Narrative design document, page 7: Universe – World Origins" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-08.jpg" alt="Narrative design document, page 8: Universe – World Origins" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-09.jpg" alt="Narrative design document, page 9: Universe – Geographics" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-10.jpg" alt="Narrative design document, page 10: Universe – Geographics" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-11.jpg" alt="Narrative design document, page 11: Universe – Geographics" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-12.jpg" alt="Narrative design document, page 12: Universe – Geographics" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-13.jpg" alt="Narrative design document, page 13: Universe – Geographics" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-14.jpg" alt="Narrative design document, page 14: Universe – Geographics" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-15.jpg" alt="Narrative design document, page 15: Universe – Geographics" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-16.jpg" alt="Narrative design document, page 16: Universe – Geographics" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-17.jpg" alt="Narrative design document, page 17: Universe – Cities" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-18.jpg" alt="Narrative design document, page 18: Selva" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-19.jpg" alt="Narrative design document, page 19: Fortaglia" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-20.jpg" alt="Narrative design document, page 20: Jéta" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-21.jpg" alt="Narrative design document, page 21: Guayada" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-22.jpg" alt="Narrative design document, page 22: Universe – Flora" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-23.jpg" alt="Narrative design document, page 23: Universe – Fauna" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-24.jpg" alt="Narrative design document, page 24: Universe – Civilization" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-25.jpg" alt="Narrative design document, page 25: Universe – Civilization" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-26.jpg" alt="Narrative design document, page 26: Universe – Civilization" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-27.jpg" alt="Narrative design document, page 27: Universe – Civilization" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-28.jpg" alt="Narrative design document, page 28: Universe – Civilization" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-29.jpg" alt="Narrative design document, page 29: Universe – Civilization" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-30.jpg" alt="Narrative design document, page 30: Universe – Art" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-31.jpg" alt="Narrative design document, page 31: Universe – Art" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-32.jpg" alt="Narrative design document, page 32: Universe – Architecture" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-33.jpg" alt="Narrative design document, page 33: Universe – Architecture" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-34.jpg" alt="Narrative design document, page 34: Universe – Technology" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-35.jpg" alt="Narrative design document, page 35: Universe – Technology" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-36.jpg" alt="Narrative design document, page 36: Universe – Creatures" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-37.jpg" alt="Narrative design document, page 37: Universe – Creatures" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-38.jpg" alt="Narrative design document, page 38: Universe – Creatures" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-39.jpg" alt="Narrative design document, page 39: Universe – Creatures" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-40.jpg" alt="Narrative design document, page 40: Universe – Creatures" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-41.jpg" alt="Narrative design document, page 41: Universe – Magic" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-42.jpg" alt="Narrative design document, page 42: Universe – Magic" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-43.jpg" alt="Narrative design document, page 43: Universe – Magic" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-44.jpg" alt="Narrative design document, page 44: Universe – Magic" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-45.jpg" alt="Narrative design document, page 45: Universe – Magic" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-46.jpg" alt="Narrative design document, page 46: Universe – Population" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-47.jpg" alt="Narrative design document, page 47: Universe – Population" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-48.jpg" alt="Narrative design document, page 48: Universe – Population" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-49.jpg" alt="Narrative design document, page 49: Universe – Population" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-50.jpg" alt="Narrative design document, page 50: Universe – Population" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-51.jpg" alt="Narrative design document, page 51: Universe – Population" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-52.jpg" alt="Narrative design document, page 52: Universe – Religion" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-53.jpg" alt="Narrative design document, page 53: Universe – Religion" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-54.jpg" alt="Narrative design document, page 54: Universe – Story" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-55.jpg" alt="Narrative design document, page 55: Universe – Story" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-56.jpg" alt="Narrative design document, page 56: Secrets" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-57.jpg" alt="Narrative design document, page 57: Secrets" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-58.jpg" alt="Narrative design document, page 58: Character Sheet" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-59.jpg" alt="Narrative design document, page 59: Thiago" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-60.jpg" alt="Narrative design document, page 60: Adosinda" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-61.jpg" alt="Narrative design document, page 61: Almerique" loading="lazy">
+        <img class="car-slide car-doc" src="img/ini-ndd/page-62.jpg" alt="Narrative design document, page 62: Graviel" loading="lazy">
+      </div>
+      <button class="car-btn car-prev" type="button" aria-label="Previous page">&#8592;</button>
+      <button class="car-btn car-next" type="button" aria-label="Next page">&#8594;</button>
+    </div>
+    <div class="doc-bar">
+      <input type="range" id="docRange" class="doc-range" min="1" max="62" value="1" step="1" aria-label="Document page">
+      <div class="car-count" aria-live="polite"><span id="docNow">1</span> / <span id="docTotal">62</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap next">
+  <a class="back" href="index.html#portfolio">← Back to projects</a>
+  <a class="link" style="margin-top:0" href="index.html#contact">Get in touch →</a>
+</section>
+
+</main>
+
+<footer style="border-top:1px solid var(--line)">
+  <div class="bar" style="justify-content:space-between">
+    <span>©2026 Nicola Vischi</span>
+    <a href="#top">Back to top ↑</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var track=document.getElementById('docTrack'); if(!track) return;
+  var slides=track.children, range=document.getElementById('docRange'), n=slides.length;
+  var car=track.parentElement, prev=car.querySelector('.car-prev'), next=car.querySelector('.car-next');
+  function go(d){var i=Math.min(n-1,Math.max(0,idx()+d));track.scrollTo({left:i*track.clientWidth});}
+  prev.addEventListener('click',function(){go(-1)});
+  next.addEventListener('click',function(){go(1)});
+  document.getElementById('docTotal').textContent=n; range.max=n;
+  function idx(){return Math.round(track.scrollLeft/track.clientWidth);}
+  function paint(i){prev.disabled=i<=0;next.disabled=i>=n-1;range.value=i+1;range.style.setProperty('--p',(n>1?i/(n-1)*100:0)+'%');document.getElementById('docNow').textContent=i+1;}
+  var dragging=false;
+  range.addEventListener('input',function(){dragging=true;var i=range.value-1;paint(i);track.scrollTo({left:i*track.clientWidth,behavior:'instant'});});
+  range.addEventListener('change',function(){dragging=false;});
+  track.addEventListener('keydown',function(e){var i=idx();if(e.key==='ArrowLeft'){e.preventDefault();track.scrollTo({left:Math.max(0,i-1)*track.clientWidth})}if(e.key==='ArrowRight'){e.preventDefault();track.scrollTo({left:Math.min(n-1,i+1)*track.clientWidth})}});
+  track.addEventListener('scroll',function(){if(!dragging)window.requestAnimationFrame(function(){paint(idx())});});
+  window.addEventListener('resize',function(){paint(idx())});
+  paint(0);
+})();
+</script>
+<script>
+(function(){
+  var wrap=document.querySelector('.video-wrap.yt'); if(!wrap) return;
+  wrap.querySelector('.play-btn').addEventListener('click',function(){
+    var f=document.createElement('iframe');
+    f.src='https://www.youtube-nocookie.com/embed/'+wrap.dataset.yt+'?autoplay=1&rel=0';
+    f.title='The Initiate trailer';
+    f.allow='autoplay; encrypted-media; picture-in-picture; fullscreen';
+    f.allowFullscreen=true;
+    wrap.appendChild(f); wrap.classList.add('playing');
+  });
+})();
+</script>
+<script>
+(function(){
+  document.querySelectorAll('.car-mini').forEach(function(car){
+    var track=car.querySelector('.car-track'), n=track.children.length;
+    var prev=car.querySelector('.car-prev'), next=car.querySelector('.car-next');
+    var count=car.parentElement.querySelector('.mini-count');
+    count.querySelector('.car-total').textContent=n;
+    function idx(){return Math.round(track.scrollLeft/track.clientWidth);}
+    function update(){var i=idx();count.querySelector('.car-now').textContent=i+1;prev.disabled=i<=0;next.disabled=i>=n-1;}
+    function go(d){var i=Math.min(n-1,Math.max(0,idx()+d));track.scrollTo({left:i*track.clientWidth});}
+    prev.addEventListener('click',function(){go(-1)});
+    next.addEventListener('click',function(){go(1)});
+    track.addEventListener('keydown',function(e){if(e.key==='ArrowLeft'){e.preventDefault();go(-1)}if(e.key==='ArrowRight'){e.preventDefault();go(1)}});
+    track.addEventListener('scroll',function(){window.requestAnimationFrame(update)});
+    window.addEventListener('resize',update);
+    update();
+  });
+})();
+</script>
+</body>
+</html>

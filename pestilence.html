@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pestilence | Nicola Vischi</title>
+<meta name="description" content="Pestilence: level design case study.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#E8512B;
+  --bg:#0D1417; --bg-alt:#111B20; --panel:#16222A; --panel-2:#1B2A32;
+  --line:#22313A; --line-2:#2F424C;
+  --text:#E9EEEE; --text-2:#B5C4C8; --muted:#8FA3A9; --faint:#7D9299;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1200px;margin:0 auto;padding:96px 24px}
+.alt{background:var(--bg-alt);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.h2{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin:0;line-height:1;color:var(--text)}
+.h-xl{font-size:80px;margin-top:20px}
+.h-lg{font-size:56px;margin-top:12px}
+.h-md{font-size:32px}
+.eyebrow{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.ph{background:repeating-linear-gradient(135deg,var(--panel) 0,var(--panel) 12px,var(--panel-2) 12px,var(--panel-2) 24px);border:1px solid var(--line-2);color:var(--faint);display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 28px;font-weight:700;font-size:14px;letter-spacing:.12em;text-transform:uppercase;border:0;cursor:pointer;font-family:inherit}
+.btn-fill{background:var(--accent);color:var(--bg)}
+.btn-fill:hover{filter:brightness(1.1)}
+.btn-line{border:1.5px solid var(--text);color:var(--text)}
+.btn-line:hover{background:var(--text);color:var(--bg)}
+.link{display:inline-block;margin-top:40px;font-size:15px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--accent);border-bottom:2px solid var(--accent);padding-bottom:4px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* header */
+header{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar{max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:16px}
+.logo{width:56px;height:56px;border-radius:50%;font-size:10px}
+.brand .h2{font-size:28px}
+.brand small{display:block;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+nav{display:flex;flex-wrap:wrap;gap:32px;font-size:14px;letter-spacing:.14em;text-transform:uppercase;font-weight:500}
+nav a{color:var(--text-2)}
+nav a:hover{color:var(--text)}
+
+/* hero: image fills the whole section, text on top */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.hero-bg{position:absolute;inset:0;z-index:0;overflow:hidden;background:var(--bg)}
+.hero-bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+/* gradient over the image: dark on the left, lighter toward the right */
+.hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(13,20,23,.96) 0%,rgba(13,20,23,.8) 30%,rgba(13,20,23,.4) 65%,rgba(13,20,23,.08) 100%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1;display:flex;align-items:center;min-height:640px}
+.hero .copy{max-width:640px;min-width:0}
+.hero .h-xl{margin-top:0}
+.hero p{font-size:18px;line-height:1.6;color:var(--text-2);margin:28px 0 0;max-width:520px}
+.hero .cta{display:flex;flex-wrap:wrap;gap:16px;margin-top:40px}
+
+/* grids */
+.grid{display:grid;gap:24px;margin-top:48px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g5{grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
+.card-ph{height:300px;flex-direction:column;gap:12px}
+/* project card with image: pops toward the viewer on hover, title over a bottom-up black gradient */
+.proj{position:relative;display:block;height:300px;overflow:hidden;border:1px solid var(--line-2);background:repeating-linear-gradient(135deg,var(--panel) 0,var(--panel) 12px,var(--panel-2) 12px,var(--panel-2) 24px);transition:transform .35s ease,box-shadow .35s ease}
+.proj-img{position:absolute;inset:0;background-size:cover;background-position:center;transition:transform .5s ease}
+.proj::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,.5) 35%,rgba(0,0,0,0) 65%);transition:opacity .35s ease}
+.proj-title{position:absolute;z-index:1;left:24px;right:24px;bottom:20px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:32px;line-height:1;text-transform:uppercase;letter-spacing:.02em;color:var(--text)}
+.proj:hover,.proj:focus-visible{transform:translateY(-8px) scale(1.04);box-shadow:0 28px 56px rgba(0,0,0,.6);z-index:2}
+.proj:hover .proj-img,.proj:focus-visible .proj-img{transform:scale(1.06)}
+@media (prefers-reduced-motion:reduce){.proj,.proj-img{transition:none}.proj:hover,.proj:focus-visible{transform:none}.proj:hover .proj-img{transform:none}}
+.strip{display:flex;gap:16px;margin-top:24px;overflow-x:auto;padding-bottom:12px}
+/* bigger 1:2 cards, about 3 visible at a time; the rest scroll */
+.strip{scroll-snap-type:x mandatory}
+.strip > .proj{flex:0 0 calc((100% - 32px) / 3.2);height:auto;aspect-ratio:1/2;scroll-snap-align:start}
+/* room inside the scroller so the hover pop-out isn't clipped */
+.strip{padding:24px 12px;margin-inline:-12px;scroll-padding-inline:12px}
+/* work-in-progress cards: big diagonal label across the card */
+.proj.wip{container-type:size;display:flex;align-items:center;justify-content:center}
+.wip-label{position:relative;display:block;transform:rotate(-45deg);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:56cqw;line-height:1;letter-spacing:.04em;color:var(--line-2);white-space:nowrap}
+.hint{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-top:12px}
+.sq{aspect-ratio:1/1}
+.g5 > .proj{height:auto;aspect-ratio:1/1}
+.g5 > .proj .proj-title{font-size:22px;left:16px;right:16px;bottom:14px}
+
+/* about */
+.about{display:flex;flex-wrap:wrap;gap:48px;margin-top:48px;align-items:center}
+.about-img{flex:1 1 480px;min-width:0;width:100%;max-width:100%;aspect-ratio:3/2;object-fit:cover;display:block;border:1px solid var(--line-2)}
+.about .txt{flex:1 1 400px;min-width:0}
+.about p{font-size:17px;line-height:1.6;color:var(--text-2);margin:24px 0 0}
+.about .quote{font-size:44px;line-height:1.1;text-transform:uppercase;letter-spacing:.02em;color:var(--text);margin:0}
+.tool{height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:var(--panel);border:1px solid var(--line-2);padding:16px;text-align:center}
+.tool img{max-height:44px;max-width:80%;object-fit:contain}
+.tool span{font-size:13px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--text-2)}
+
+/* career */
+.job{border-top:3px solid var(--line-2);background:var(--panel);padding:32px}
+.job.now{border-top-color:var(--accent)}
+.job .when{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.job .h2{font-size:32px;margin-top:12px}
+.job-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:12px}
+.job-head .h2{margin-top:0}
+.job-logo{height:48px;width:auto;flex:none;background:#fff;padding:4px;border-radius:4px}
+.job-logo-lg{height:80px;margin-block:-16px}
+.job-logo-bare{background:none;padding:0;border-radius:0}
+.job .role{font-size:15px;color:var(--text-2);margin-top:8px}
+.job ul{margin:24px 0 0;padding-left:20px;color:var(--text-2);line-height:1.9;font-size:15px}
+
+/* contact */
+.contact{display:flex;flex-wrap:wrap;gap:64px}
+.contact .info{flex:1 1 360px;min-width:0}
+.contact form{flex:1 1 440px;min-width:0;display:flex;flex-direction:column;gap:20px}
+.contact .city{font-size:18px;color:var(--text-2);margin:32px 0 0}
+.mail{display:block;font-size:18px;margin-top:12px;border-bottom:1px solid var(--line-2);width:max-content;max-width:100%;padding-bottom:4px;overflow-wrap:anywhere}
+.social{display:flex;gap:16px;margin-top:32px}
+.social a{width:48px;height:48px;border:1px solid var(--line-2);display:flex;align-items:center;justify-content:center}
+label{display:block;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+input,textarea{width:100%;min-height:48px;background:var(--panel);border:1px solid var(--line-2);color:var(--text);font-family:inherit;font-size:16px;padding:0 14px}
+textarea{height:140px;padding:12px 14px;resize:none}
+
+footer .bar{padding:28px 24px;font-size:14px;color:var(--muted)}
+footer a{letter-spacing:.14em;text-transform:uppercase}
+
+/* tablet */
+@media (max-width:900px){
+  .wrap{padding:72px 20px}
+  .h-xl{font-size:60px}
+  .h-lg{font-size:44px}
+  .g3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g5{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .strip > .proj{flex-basis:calc((100% - 16px) / 2.2)}
+  .about .quote{font-size:36px}
+  .hero .wrap{min-height:540px}
+}
+/* phone */
+@media (max-width:560px){
+  .wrap{padding:48px 16px}
+  .bar{padding:12px 16px}
+  nav{gap:20px;font-size:13px}
+  .brand .h2{font-size:22px}
+  .logo{width:44px;height:44px}
+  .h-xl{font-size:52px}
+  .h-lg{font-size:40px}
+  .hero p{font-size:16px}
+  .hero .wrap{min-height:580px}
+  .hero-bg::after{background:linear-gradient(90deg,rgba(13,20,23,.92) 0%,rgba(13,20,23,.75) 50%,rgba(13,20,23,.45) 100%)}
+  .hero .cta .btn{width:100%}
+  .g2,.g3{grid-template-columns:1fr}
+  .g5{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid{margin-top:28px}
+  .card-ph{height:190px}
+  .proj{height:190px}
+  .proj-title{font-size:26px;left:16px;bottom:14px}
+  .strip{margin-top:16px}
+  .strip > .proj{flex-basis:calc((100% - 16px) / 1.4)}
+  .about .quote{font-size:30px}
+  .job{padding:24px}
+  .job .h2{font-size:28px}
+  .job-logo{height:36px}
+  .job-logo-lg{height:56px;margin-block:-10px}
+  .contact{gap:40px}
+}
+
+/* ===== project page ===== */
+.back{display:inline-flex;align-items:center;gap:8px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.back:hover{color:var(--text)}
+.p-hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.p-hero .ph{position:absolute;inset:0;border:0;z-index:0;align-items:flex-start;justify-content:flex-end;padding:24px}
+.p-hero .ph::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(13,20,23,.96) 0%,rgba(13,20,23,.55) 45%,rgba(13,20,23,.15) 100%)}
+.p-hero .wrap{position:relative;z-index:1;min-height:520px;display:flex;flex-direction:column;justify-content:flex-end}
+.p-hero .h-xl{margin-top:16px}
+.p-sub{font-size:20px;color:var(--text-2);margin-top:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:500}
+/* team grid: 4 x 4 squares with a name under each */
+.team{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:32px 24px;margin-top:48px}
+.member{margin:0;min-width:0}
+.member-photo{aspect-ratio:1/1;max-width:100%}
+.member figcaption{margin-top:12px;text-align:center;overflow-wrap:anywhere;display:flex;flex-direction:column;gap:4px}
+.m-name{font-size:15px;font-weight:500;color:var(--text)}
+.m-role{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.rule{border-top:1px solid var(--line)}
+@media (max-width:560px){.team{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 16px;margin-top:28px}}
+.facts{display:flex;flex-wrap:wrap;gap:12px 32px;margin-top:32px;padding-top:24px;border-top:1px solid var(--line-2)}
+.facts div{min-width:120px}
+.facts dt{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.facts dd{margin:6px 0 0;font-size:16px;color:var(--text)}
+.prose{max-width:68ch}
+.prose p{font-size:17px;line-height:1.7;color:var(--text-2);margin:20px 0 0}
+.prose strong{color:var(--text);font-weight:700}
+.split{display:flex;flex-wrap:wrap;gap:48px;margin-top:48px;align-items:center}
+.split > *{flex:1 1 420px;min-width:0}
+.split .ph{aspect-ratio:4/3;max-width:100%}
+.wide{aspect-ratio:16/9;margin-top:48px;max-width:100%}
+.steps{margin-top:48px;display:flex;flex-direction:column;gap:0;counter-reset:step}
+/* each step is a full-width band; bands alternate like the page sections */
+.step{padding-block:56px}
+.step:nth-child(odd){background:var(--bg-alt);box-shadow:0 0 0 100vmax var(--bg-alt);clip-path:inset(0 -100vmax)}
+.step{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:center}
+.step:nth-child(even) .ph{order:-1}
+.step .num{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.16em;color:var(--accent)}
+.step h3{font-size:36px;margin-top:8px}
+.step .ph{aspect-ratio:16/10;max-width:100%}
+.step-img{display:block;width:100%;max-width:100%;height:auto;border:1px solid var(--line-2)}
+.step-img-free{border:0}
+.step:nth-child(even) .step-img,.step:nth-child(even) .step-gallery{order:-1}
+.note{margin-top:56px;border-left:3px solid var(--accent);background:var(--panel);padding:24px 28px}
+.note h3{font-size:28px}
+.note + .note{margin-top:24px}
+/* document carousel: one page at a time, side arrows */
+.carousel{position:relative;margin-top:48px}
+.car-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none}
+.car-track::-webkit-scrollbar{display:none}
+.car-slide{flex:0 0 100%;aspect-ratio:16/9;scroll-snap-align:start}
+.car-btn{position:absolute;top:50%;transform:translateY(-50%);width:56px;height:56px;display:flex;align-items:center;justify-content:center;background:rgba(13,20,23,.85);color:var(--text);border:1px solid var(--line-2);font-size:22px;cursor:pointer;transition:background .2s,opacity .2s}
+.car-btn:hover{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.car-btn:disabled{opacity:.25;cursor:default;background:rgba(13,20,23,.85);color:var(--text);border-color:var(--line-2)}
+.car-prev{left:16px}
+.car-next{right:16px}
+.car-count{margin-top:16px;text-align:center;font-size:13px;letter-spacing:.16em;color:var(--muted);font-variant-numeric:tabular-nums}
+/* small gallery inside a process step */
+.step-gallery{min-width:0}
+.car-sm{margin-top:0}
+.car-fig{margin:0;aspect-ratio:auto;display:flex;flex-direction:column;gap:10px}
+.car-fig img{display:block;width:100%;aspect-ratio:4/3;object-fit:contain;background:#fff;border:1px solid var(--line-2)}
+.car-ph{aspect-ratio:4/3;max-width:100%}
+.car-fig img.car-img-dark{background:#000}
+.car-shot .car-fig img{aspect-ratio:1600/968;object-fit:cover}
+.car-gif .car-fig img{aspect-ratio:1787/1258;object-fit:cover}
+.car-nocap .car-btn{top:50%}
+.car-sm.car-nocap + .car-count{margin-top:12px}
+.car-fig figcaption{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.car-sm .car-btn{top:calc((100% - 28px) / 2);width:44px;height:44px;font-size:18px}
+.car-sm .car-prev{left:10px}.car-sm .car-next{right:10px}
+.car-sm + .car-count{margin-top:-25px;text-align:right;line-height:20px}
+@media (max-width:560px){.car-btn{width:44px;height:44px;font-size:18px}.car-prev{left:8px}.car-next{right:8px}}
+.next{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+@media (max-width:900px){.step{grid-template-columns:1fr;gap:20px}.step:nth-child(even) .ph{order:0}.step:nth-child(even) .step-img,.step:nth-child(even) .step-gallery{order:0}}
+@media (max-width:560px){.p-hero .wrap{min-height:420px}.step h3{font-size:30px}.p-sub{font-size:16px}}
+</style>
+<script>
+/* always open a project page at the top */
+if('scrollRestoration' in history){history.scrollRestoration='manual';}
+function toTop(){if(!location.hash||location.hash==='#top'){document.documentElement.style.scrollBehavior='auto';window.scrollTo(0,0);document.documentElement.style.scrollBehavior='';}}
+document.addEventListener('DOMContentLoaded',toTop);
+window.addEventListener('load',toTop);
+window.addEventListener('pageshow',toTop);
+</script>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <a class="brand" href="index.html#top">
+      <div class="ph logo">Logo</div>
+      <div><div class="h2">Nicola Vischi</div><small>Junior Level / Narrative Designer</small></div>
+    </a>
+    <nav aria-label="Main">
+      <a href="index.html#top">Home</a>
+      <a href="index.html#portfolio">Portfolio</a>
+      <a href="index.html#about">About me</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- 1. Title + key facts. Cover image: add style="background:url(img/pestilence.jpg) center/cover" to the .ph below -->
+<section id="top" class="p-hero">
+  <div class="ph" aria-hidden="true">Cover image / key art</div>
+  <div class="wrap">
+    <a class="back" href="index.html#personal">← Back to projects</a>
+    <h1 class="h2 h-xl">Pestilence</h1>
+    <dl class="facts">
+      <div><dt>Year</dt><dd>2026</dd></div>
+      <div><dt>Role</dt><dd>Multirole</dd></div>
+      <div><dt>Engine</dt><dd>UE5</dd></div>
+      <div><dt>Team</dt><dd>Solo</dd></div>
+      <div><dt>Duration</dt><dd>3 weeks</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- 2. Pitch -->
+<section class="wrap">
+  <div class="eyebrow">Pitch</div>
+  <h2 class="h2 h-lg">The game in a few lines</h2>
+  <div class="prose">
+    <p>Pestilence is an <strong>action-adventure</strong> game in a <strong>medieval setting</strong>, where an <strong>alchemist</strong> has to <strong>find a cure for the Plague</strong>, using <strong>alchemy notions</strong> found in <strong>ancient books</strong>.</p>
+  </div>
+  <!-- Trailer or gameplay video: replace this box with your YouTube link or a video -->
+  <a href="#" class="ph wide">Trailer / gameplay video</a>
+</section>
+
+<!-- 3. About the concept -->
+<section class="alt">
+  <div class="wrap">
+    <div class="eyebrow">About the concept</div>
+    <h2 class="h2 h-lg">Where the idea came from</h2>
+    <div class="split">
+      <div class="prose">
+        <p>To do this game, I needed to <strong>create a new language</strong>, so I took inspiration from <strong>dead languages</strong>, like dead Germanic dialects from the 13th century, one especially: <strong>Greenlandic Norse</strong>.</p>
+        <p>Its alphabet is composed of <strong>runes</strong>, used by the <strong>Norse settlers in Greenland</strong>. So, I decided to take this language and <strong>mix it with alchemy</strong>.</p>
+      </div>
+      <img class="step-img step-img-free" src="img/pestilence-conception.png" alt="Stone tablet carved with an alchemical symbol and a word in Norse runes">
+    </div>
+  </div>
+</section>
+
+<!-- 4. Process -->
+<section class="wrap">
+  <div class="eyebrow">My process</div>
+  <h2 class="h2 h-lg">From idea to playable level</h2>
+  <div class="steps">
+    <div class="step">
+      <div><div class="num">STEP 01</div><h3 class="h2">Conception</h3><div class="prose"><p>I wanted to create a world with a <strong>dark secret to unveil</strong>, where the player would have <strong>exactly the same knowledge</strong> of it <strong>as the character</strong>, to <strong>increase the immersion</strong>.</p><p>I wanted the world to <strong>look beautiful</strong> while also showing the <strong>gruesome atmosphere</strong> that the Plague created, and how <strong>people lose their humanity</strong> under certain circumstances.</p><p>I also thought that it would be interesting to have a <strong>skill tree</strong> where you need to find the <strong>right combination of runes</strong> to <strong>unlock new recipes</strong>. This reinforces the immersion in the role of an <strong>alchemist apprentice</strong> who's <strong>discovering lost knowledge</strong>.</p></div></div>
+      <div class="step-gallery">
+        <div class="carousel car-sm car-shot" aria-roledescription="carousel" aria-label="Level areas">
+          <div class="car-track" tabindex="0">
+            <figure class="car-slide car-fig"><img class="car-img-dark" src="img/pestilence-small-deposit.jpg" alt="Dark small deposit with stacked crates, lit by a torch"><figcaption>1 · Small deposit</figcaption></figure>
+            <figure class="car-slide car-fig"><img class="car-img-dark" src="img/pestilence-alley.jpg" alt="Village alley with a rat zone and Layla saying that rats are here too" loading="lazy"><figcaption>2 · Alley</figcaption></figure>
+            <figure class="car-slide car-fig"><img class="car-img-dark" src="img/pestilence-narrative-2.jpg" alt="Farm interior: rats block the way under a hanging pig carcass, and Layla says the carcass could help" loading="lazy"><figcaption>3 · Farm interior</figcaption></figure>
+            <figure class="car-slide car-fig"><img class="car-img-dark" src="img/pestilence-farm-ext.jpg" alt="Farm exterior with open barn doors and a cart under a shelter" loading="lazy"><figcaption>4 · Farm exterior</figcaption></figure>
+            <figure class="car-slide car-fig"><img class="car-img-dark" src="img/pestilence-narrative.jpg" alt="Level opening: two guards by a cart, with their barks shown as floating text" loading="lazy"><figcaption>5 · Opening</figcaption></figure>
+            <figure class="car-slide car-fig"><img class="car-img-dark" src="img/pestilence-market.jpg" alt="Market street with stalls, torches and an animal carcass on a counter" loading="lazy"><figcaption>6 · Market</figcaption></figure>
+            <figure class="car-slide car-fig"><img class="car-img-dark" src="img/pestilence-square.jpg" alt="Village square where two guards say that another village has been cleansed" loading="lazy"><figcaption>7 · Square</figcaption></figure>
+          </div>
+          <button class="car-btn car-prev" type="button" aria-label="Previous image">&#8592;</button>
+          <button class="car-btn car-next" type="button" aria-label="Next image">&#8594;</button>
+        </div>
+        <div class="car-count" aria-live="polite"><span class="car-now">1</span> / <span class="car-total">7</span></div>
+      </div>
+    </div>
+    <div class="step">
+      <div><div class="num">STEP 02</div><h3 class="h2">Layout</h3><div class="prose"><p>I designed a <strong>village of farmers and merchants</strong> that has been attacked by the <strong>Plague</strong> and the <strong>Royal Guard</strong>.</p><p>The focus of the level is <strong>stealth</strong>. I wanted to make the player <strong>feel like a prey</strong> while exploring the <strong>narrow streets</strong> of the village overwhelmed by <strong>rats</strong>. This allowed me to play with <strong>tension</strong> and create <strong>situations of stress</strong> to reinforce the &ldquo;prey&rdquo; aspect.</p><p>However, I didn't want to limit the player to the stealth approach: it's also possible to <strong>fight the guards</strong>, but at a <strong>high cost in terms of resources</strong>.</p></div></div>
+      <div class="step-gallery">
+        <div class="carousel car-sm" aria-roledescription="carousel" aria-label="Layout iterations">
+          <div class="car-track" tabindex="0">
+            <figure class="car-slide car-fig"><img class="car-img-dark" src="img/pestilence-bubble.jpg" alt="Bubble diagram of the level: village exteriors, small alley, house, small deposit, farm deposit and alchemist house, with icons for pestilent air, resources, documents, alchemist table, height and enemies"><figcaption>1 · Bubble Diagram</figcaption></figure>
+            <figure class="car-slide car-fig"><img src="img/pestilence-layout-1.png" alt="Hand-drawn top-down layout of the village streets, with a miasma zone, enemies and the path to the farm"><figcaption>2 · First digital layout</figcaption></figure>
+            <figure class="car-slide car-fig"><img src="img/pestilence-layout-2.png" alt="Hand-drawn top-down layout of a small area with a rat passage, enemies and a house"><figcaption>3 · First digital layout</figcaption></figure>
+            <figure class="car-slide car-fig"><img src="img/pestilence-layout-final.png" alt="Final top-down layout from start to end with legend: pick ups, movable objects, enemies, bodies, hiding spots and rats"><figcaption>4 · Final layout</figcaption></figure>
+            <figure class="car-slide car-fig"><img src="img/pestilence-layout-final-2.png" alt="Final top-down layout of the alchemist area from start to end with legend: pig carcass, alchemist table, enemies, bodies, rats, armoured guard, NPC, ladder, pick ups and doors"><figcaption>5 · Final layout</figcaption></figure>
+          </div>
+          <button class="car-btn car-prev" type="button" aria-label="Previous image">&#8592;</button>
+          <button class="car-btn car-next" type="button" aria-label="Next image">&#8594;</button>
+        </div>
+        <div class="car-count" aria-live="polite"><span class="car-now">1</span> / <span class="car-total">5</span></div>
+      </div>
+    </div>
+    <div class="step">
+      <div><div class="num">STEP 03</div><h3 class="h2">Narrative overview</h3><div class="prose"><p>I tell my story through <strong>environmental narration</strong>, but also with <strong>barks from the guards</strong>. The main goal is to make the player <strong>feel like the hero</strong> who has to <strong>save humanity</strong> from collapsing under the Plague.</p><p>Starting with <strong>little information</strong> and gathering it along the way increases the feeling of being the <strong>only hope for salvation</strong>. That's also why most of the main character's journey is <strong>solitary</strong>, like a <strong>beam of light surrounded by darkness</strong>.</p><p>So, the player feels the <strong>weight and the pressure of this world</strong> on his shoulders too.</p></div></div>
+      <div class="step-gallery">
+        <div class="carousel car-sm car-shot car-nocap" aria-roledescription="carousel" aria-label="Narrative in the level">
+          <div class="car-track" tabindex="0">
+            <figure class="car-slide car-fig"><img class="car-img-dark" src="img/pestilence-narrative.jpg" alt="Level opening in the Unreal Engine editor: two guards by a cart, with their barks shown as floating text"></figure>
+            <figure class="car-slide car-fig"><img class="car-img-dark" src="img/pestilence-narrative-2.jpg" alt="Farm interior in the Unreal Engine editor: rats block the way under a hanging pig carcass, and Layla says the carcass could help" loading="lazy"></figure>
+            <figure class="car-slide car-fig"><img class="car-img-dark" src="img/pestilence-narrative-3.jpg" alt="Fountain square in the Unreal Engine editor: two guards stand over a villager killed in the fountain, with the cinematic note and their dialogue as floating text" loading="lazy"></figure>
+          </div>
+          <button class="car-btn car-prev" type="button" aria-label="Previous image">&#8592;</button>
+          <button class="car-btn car-next" type="button" aria-label="Next image">&#8594;</button>
+        </div>
+        <div class="car-count" aria-live="polite"><span class="car-now">1</span> / <span class="car-total">3</span></div>
+      </div>
+    </div>
+    <div class="step">
+      <div><div class="num">STEP 04</div><h3 class="h2">Blockout &amp; iterations</h3><div class="prose"><p>I wanted to <strong>alternate exterior and interior sections</strong> of the village, but I didn't want to give the <strong>feeling of total safety</strong> while there.</p><p>So in these kinds of zones I used <strong>obstacles</strong> like <strong>miasma</strong> or <strong>rats</strong> to <strong>keep the player on his toes</strong>.</p><p>I also needed to <strong>guide the player</strong> through these events without creating <strong>confusion or misunderstandings</strong> on the correct path. The solution was to use items like <strong>furniture, boxes or carts</strong> to create <strong>leading lines</strong> that give a direction, also reinforced by the <strong>lights of torches</strong>.</p></div></div>
+      <div class="step-gallery">
+        <div class="carousel car-sm car-gif" aria-roledescription="carousel" aria-label="Blockout iterations">
+          <div class="car-track" tabindex="0">
+            <figure class="car-slide car-fig"><img class="car-img-dark" src="img/pestilence-blockout.gif" alt="Animated blockout of a house interior in grey grid material, with light markers on the back wall"><figcaption>1 · House</figcaption></figure>
+            <figure class="car-slide car-fig"><img class="car-img-dark" src="img/pestilence-blockout-2.gif" alt="Animated blockout of the farm interior in grey grid material, with a vaulted ceiling and light markers" loading="lazy"><figcaption>2 · Farm</figcaption></figure>
+          </div>
+          <button class="car-btn car-prev" type="button" aria-label="Previous image">&#8592;</button>
+          <button class="car-btn car-next" type="button" aria-label="Next image">&#8594;</button>
+        </div>
+        <div class="car-count" aria-live="polite"><span class="car-now">1</span> / <span class="car-total">2</span></div>
+      </div>
+    </div>
+    <div class="step">
+      <div><div class="num">STEP 05</div><h3 class="h2">Final level</h3><div class="prose"><p>The village had to <strong>feel alive even without the player</strong>. To do so, I had to think about <strong>what happened before his arrival</strong>.</p><p>In zones like the <strong>market</strong>, the <strong>deposit</strong> and the <strong>alchemist's house</strong>, I arranged the <strong>placement of items and furniture</strong> to hint that there was a <strong>fight</strong>, someone <strong>fleeing</strong> or <strong>being captured</strong> in the rush.</p></div></div>
+      <img class="step-img" src="img/pestilence-final.gif" alt="Animated overview of the whole level blockout in Unreal Engine, seen from above">
+    </div>
+  </div>
+  <div class="note">
+    <h3 class="h2">The challenges</h3>
+    <div class="prose"><p>I found it pretty difficult to conceive the level for a <strong>stealth approach</strong> while also leaving the player <strong>free to choose another strategy</strong>.</p><p>This exercise made me more conscious about giving <strong>player freedom</strong> the <strong>same importance as the storytelling</strong>.</p></div>
+  </div>
+  <div class="note">
+    <h3 class="h2">Problems encountered</h3>
+    <div class="prose"><p>The <strong>size of the map</strong> was a problem I noticed when I started to <strong>fill the spaces with elements</strong>. <strong>Streets were too large</strong>, some <strong>sections too long</strong>, causing an <strong>unwanted drop in tension</strong>.</p><p>However, after some changes, spaces started to feel <strong>less empty and useless</strong>, but this correction <strong>cost me some precious time</strong>.</p></div>
+  </div>
+</section>
+
+<!-- 5. Production example: one .ph per page of your level design document -->
+<section class="alt">
+  <div class="wrap">
+    <div class="eyebrow">Production example</div>
+    <h2 class="h2 h-lg">Level design document</h2>
+    <div class="carousel" aria-roledescription="carousel" aria-label="Level design document pages">
+      <div class="car-track" tabindex="0">
+        <div class="ph car-slide">Document page 1</div>
+        <div class="ph car-slide">Document page 2</div>
+        <div class="ph car-slide">Document page 3</div>
+      </div>
+      <button class="car-btn car-prev" type="button" aria-label="Previous page">&#8592;</button>
+      <button class="car-btn car-next" type="button" aria-label="Next page">&#8594;</button>
+    </div>
+    <div class="car-count" aria-live="polite"><span class="car-now">1</span> / <span class="car-total">3</span></div>
+  </div>
+</section>
+
+<section class="wrap next">
+  <a class="back" href="index.html#personal">← Back to projects</a>
+  <a class="link" style="margin-top:0" href="index.html#contact">Get in touch →</a>
+</section>
+
+</main>
+
+<footer style="border-top:1px solid var(--line)">
+  <div class="bar" style="justify-content:space-between">
+    <span>©2026 Nicola Vischi</span>
+    <a href="#top">Back to top ↑</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  document.querySelectorAll('.carousel').forEach(function(car){
+    var track=car.querySelector('.car-track'), slides=track.children;
+    var prev=car.querySelector('.car-prev'), next=car.querySelector('.car-next');
+    var count=car.nextElementSibling && car.nextElementSibling.classList.contains('car-count') ? car.nextElementSibling : null;
+    if(count) count.querySelector('.car-total').textContent=slides.length;
+    function idx(){return Math.round(track.scrollLeft/track.clientWidth);}
+    function update(){var i=idx(); if(count) count.querySelector('.car-now').textContent=i+1; prev.disabled=i<=0; next.disabled=i>=slides.length-1;}
+    function go(d){track.scrollTo({left:(idx()+d)*track.clientWidth});}
+    prev.addEventListener('click',function(){go(-1)});
+    next.addEventListener('click',function(){go(1)});
+    track.addEventListener('keydown',function(e){if(e.key==='ArrowLeft'){e.preventDefault();go(-1)}if(e.key==='ArrowRight'){e.preventDefault();go(1)}});
+    track.addEventListener('scroll',function(){window.requestAnimationFrame(update)});
+    window.addEventListener('resize',update);
+    update();
+  });
+})();
+</script>
+</body>
+</html>
